@@ -141,7 +141,7 @@ __ОТВЕТ:__
     	end
     end
     ```  
-    [![Screenshot-20210415-184741.png](https://i.postimg.cc/DwRvv1Y1/Screenshot-20210415-184741.png)](https://postimg.cc/JscVKH8h)
+    [![Screenshot-20210415-184741.png](https://github.com/tabwizard/devops-netology/raw/main/img/Screenshot_20210415_184741.png)](https://github.com/tabwizard/devops-netology/raw/main/img/Screenshot_20210415_184741.png)
 
 1. Команда `vagrant ssh` из директории, в которой содержится Vagrantfile, позволит вам оказаться внутри виртуальной машины без каких-либо дополнительных настроек. Попрактикуйтесь в выполнении обсуждаемых команд в терминале Ubuntu.  
 __ОТВЕТ:__  
