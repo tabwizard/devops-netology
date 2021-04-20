@@ -204,7 +204,7 @@ __ОТВЕТ:__ в строке 269 описано, что `[[]]` возвращ
     PATH=/tmp/new_path_directory:$PATH
     type -a bash
 
-     bash is /tmp/new_path_directory/bash
+    bash is /tmp/new_path_directory/bash
     bash is /usr/bin/bash
     bash is /bin/bash
     ```
