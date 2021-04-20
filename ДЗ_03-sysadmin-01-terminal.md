@@ -200,7 +200,7 @@ __ОТВЕТ:__ в строке 269 описано, что `[[]]` возвращ
     __ОТВЕТ:__
     ```bash
     mkdir /tmp/new_path_directory
-    ln -s $(type -p bash) /tmp/new_path_directory
+    ln -s $(which bash) /tmp/new_path_directory
     PATH=/tmp/new_path_directory:$PATH
     type -a bash
 
