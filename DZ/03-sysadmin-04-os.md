@@ -56,7 +56,7 @@
     Process: 700 ExecStart=/usr/bin/node-exporter $NODEEXPORTERARGS (code=killed, signal=TERM)
     Main PID: 700 (code=killed, signal=TERM)
     ...
-    vagrant:~/ $ sudo reeboot
+    vagrant:~/ $ sudo reboot
     ...
     vagrant:~/ $ curl http://localhost:9100/
         <html>
