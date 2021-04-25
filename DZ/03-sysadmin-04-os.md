@@ -9,16 +9,16 @@
 
     ```bash
     vagrant:~/ $ wget https://github.com/prometheus/node_exporter/releases/download/v1.1.2/node_exporter-1.1.2.linux-amd64.tar.gz
-    vagrant:~/ $ tar xvzf node_exporter-1.1.2.linux-amd64.tar.gz
+    vagrant:~/ $ tar xvzf ./node_exporter-1.1.2.linux-amd64.tar.gz
     node_exporter-1.1.2.linux-amd64/
     node_exporter-1.1.2.linux-amd64/LICENSE
     node_exporter-1.1.2.linux-amd64/NOTICE
     node_exporter-1.1.2.linux-amd64/node_exporter
-    vagrant:~/ $ sudo mv node_exporter-1.1.2.linux-amd64/node_exporter /usr/bin/node-exporter
+    vagrant:~/ $ sudo mv ./node_exporter-1.1.2.linux-amd64/node_exporter /usr/bin/node-exporter
     vagrant:~/ $ rm -rf ./node_exporter-1.1.2.linux-amd64
     vagrant:~/ $ rm ./node_exporter-1.1.2.linux-amd64.tar.gz
-    vagrant:~/ $ sudo touch /lib/systemd/system/node-exporter.service
     vagrant:~/ $ sudo vim /lib/systemd/system/node-exporter.service
+    ...
     vagrant:~/ $ systemctl cat node-exporter.service
     # /lib/systemd/system/node-exporter.service
     [Unit]
@@ -45,17 +45,7 @@
     Memory: 2.2M
     CGroup: /system.slice/node-exporter.service
     └─2107 /usr/bin/node-exporter
-    Apr 25 13:36:51 vagrant node-exporter[2107]: level=info ts=2021-04-25T06:36:51.464Z caller=node_exporter.go:113 collector=thermal_zone
-    Apr 25 13:36:51 vagrant node-exporter[2107]: level=info ts=2021-04-25T06:36:51.464Z caller=node_exporter.go:113 collector=time
-    Apr 25 13:36:51 vagrant node-exporter[2107]: level=info ts=2021-04-25T06:36:51.464Z caller=node_exporter.go:113 collector=timex
-    Apr 25 13:36:51 vagrant node-exporter[2107]: level=info ts=2021-04-25T06:36:51.465Z caller=node_exporter.go:113 collector=udp_queues
-    Apr 25 13:36:51 vagrant node-exporter[2107]: level=info ts=2021-04-25T06:36:51.465Z caller=node_exporter.go:113 collector=uname
-    Apr 25 13:36:51 vagrant node-exporter[2107]: level=info ts=2021-04-25T06:36:51.465Z caller=node_exporter.go:113 collector=vmstat
-    Apr 25 13:36:51 vagrant node-exporter[2107]: level=info ts=2021-04-25T06:36:51.465Z caller=node_exporter.go:113 collector=xfs
-    Apr 25 13:36:51 vagrant node-exporter[2107]: level=info ts=2021-04-25T06:36:51.465Z caller=node_exporter.go:113 collector=zfs
-    Apr 25 13:36:51 vagrant node-exporter[2107]: level=info ts=2021-04-25T06:36:51.465Z caller=node_exporter.go:195 msg="Listening on" address=:9100
-    Apr 25 13:36:51 vagrant node-exporter[2107]: level=info ts=2021-04-25T06:36:51.466Z caller=tls_config.go:191 msg="TLS is disabled." http2=false
-
+    ...
     vagrant:~/ $ sudo systemctl stop node-exporter.service
     vagrant:~/ $ systemctl status node-exporter.service
     ● node-exporter.service - The Prometheus Node Exporter exposes a wide variety of hardware- and kernel-related metrics.
@@ -84,16 +74,17 @@
     vagrant:~/ $ cat /etc/node-exporter.conf
     NODEEXPORTERARGS="--collector.disable-defaults --collector.cpu --collector.cpufreq --collector.meminfo --collector.vmstat --collector.diskstats --collector.filesystem --collector.netclass --collector.netdev --collector.netstat"
     ```
-    >--collector.disable-defaults - enable only some specific collector  
-    cpu - Exposes CPU statistics  
-    cpufreq - Exposes CPU frequency statistics  
-    meminfo - Exposes memory statistics.  
-    vmstat - Exposes statistics from /proc/vmstat.  
-    diskstats - Exposes disk I/O statistics.  
-    filesystem - Exposes filesystem statistics, such as disk space used.  
-    netclass - Exposes network interface info from /sys/class/net/  
-    netdev - Exposes network interface statistics such as bytes transferred.  
-    netstat - Exposes network statistics from /proc/net/netstat.   
+
+    >_--collector.disable-defaults_ - enable only some specific collector  
+    _cpu_ - Exposes CPU statistics  
+    _cpufreq_ - Exposes CPU frequency statistics  
+    _meminfo_ - Exposes memory statistics.  
+    _vmstat_ - Exposes statistics from /proc/vmstat.  
+    _diskstats_ - Exposes disk I/O statistics.  
+    _filesystem_ - Exposes filesystem statistics, such as disk space used.  
+    _netclass_ - Exposes network interface info from /sys/class/net/  
+    _netdev_ - Exposes network interface statistics such as bytes transferred.  
+    _netstat_ - Exposes network statistics from /proc/net/netstat.
 1. Установите в свою виртуальную машину [Netdata](https://github.com/netdata/netdata). Воспользуйтесь [готовыми пакетами](https://packagecloud.io/netdata/netdata/install) для установки (`sudo apt install -y netdata`). После успешной установки:
     * в конфигурационном файле `/etc/netdata/netdata.conf` в секции [web] замените значение с localhost на `bind to = 0.0.0.0`,
     * добавьте в Vagrantfile проброс порта Netdata на свой локальный компьютер и сделайте `vagrant reload`:
