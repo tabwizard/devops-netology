@@ -68,7 +68,9 @@
     ```
 
 1. Ознакомьтесь с опциями node_exporter и выводом `/metrics` по-умолчанию. Приведите несколько опций, которые вы бы выбрали для базового мониторинга хоста по CPU, памяти, диску и сети.  
+
     __ОТВЕТ:__
+
     ```bash
     vagrant:~/ $ cat /etc/node-exporter.conf
     NODEEXPORTERARGS="--collector.disable-defaults --collector.cpu --collector.cpufreq --collector.meminfo --collector.vmstat --collector.diskstats --collector.filesystem --collector.netclass --collector.netdev --collector.netstat"
@@ -96,7 +98,18 @@
     __ОТВЕТ:__  Виртуальную машину `Netdata` установил, в конфиге поменял адрес `bind socket to IP = 0.0.0.0`, в `Vagrantfile` добавил проброс портов, на хост-машине открыл в браузере `http://127.0.0.1:199999`
     [![Screenshot_20210425_173524.png](https://github.com/tabwizard/devops-netology/raw/03-sysadmin-04-os/img/Screenshot_20210425_173524.png)](https://github.com/tabwizard/devops-netology/blob/03-sysadmin-04-os/img/Screenshot_20210425_173524.png)
 
-1. Можно ли по выводу `dmesg` понять, осознает ли ОС, что загружена не на настоящем оборудовании, а на системе виртуализации?
+1. Можно ли по выводу `dmesg` понять, осознает ли ОС, что загружена не на настоящем оборудовании, а на системе виртуализации?  
+
+    __ОТВЕТ:__ На реальной машине вывод `sudo dmesg | grep -i virtual` пустой, на виртуалке:
+
+    ```bash
+    vagrant:~/ $ sudo dmesg | grep -i virtual
+    [    0.000000] DMI: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+    [    0.022090] CPU MTRRs all blank - virtualized system.
+    [    0.139073] Booting paravirtualized kernel on KVM
+    [    2.544860] systemd[1]: Detected virtualization oracle.
+    ```  
+
 1. Как настроен sysctl `fs.nr_open` на системе по-умолчанию? Узнайте, что означает этот параметр. Какой другой существующий лимит не позволит достичь такого числа (`ulimit --help`)?
 1. Запустите любой долгоживущий процесс (не `ls`, который отработает мгновенно, а, например, `sleep 1h`) в отдельном неймспейсе процессов; покажите, что ваш процесс работает под PID 1 через `nsenter`. Для простоты работайте в данном задании под root (`sudo -i`). Под обычным пользователем требуются дополнительные опции (`--map-root-user`) и т.д.
 1. Найдите информацию о том, что такое `:(){ :|:& };:`. Запустите эту команду в своей виртуальной машине Vagrant с Ubuntu 20.04 (**это важно, поведение в других ОС не проверялось**). Некоторое время все будет "плохо", после чего (минуты) – ОС должна стабилизироваться. Вызов `dmesg` расскажет, какой механизм помог автоматической стабилизации. Как настроен этот механизм по-умолчанию, и как изменить число процессов, которое можно создать в сессии?
