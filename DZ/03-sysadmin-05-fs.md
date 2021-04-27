@@ -430,6 +430,21 @@
     ```  
 
     __ОТВЕТ:__
-    [![Screenshot_20210427_175005.png](https://github.com/tabwizard/devops-netology/raw/03-sysadmin-05-fs/img/Screenshot_20210427_175005.png)](https://github.com/tabwizard/devops-netology/raw/03-sysadmin-05-fs/img/Screenshot_20210427_175005.png)
+    [![Screenshot_20210427_181328.png](https://github.com/tabwizard/devops-netology/raw/03-sysadmin-05-fs/img/Screenshot_20210427_181328.png)](https://github.com/tabwizard/devops-netology/raw/03-sysadmin-05-fs/img/Screenshot_20210427_181328.png)
 
-1. Погасите тестовый хост, `vagrant destroy`.
+1. Погасите тестовый хост, `vagrant destroy`.  
+
+    __ОТВЕТ:__
+
+    ```bash
+    root@vagrant:~# exit
+    logout
+    vagrant@vagrant:~$ exit
+    logout
+    Connection to 127.0.0.1 closed.
+    wizard:Vagrant/ $ vagrant halt
+    ==> default: Attempting graceful shutdown of VM...
+    wizard:Vagrant/ $ vagrant destroy
+    default: Are you sure you want to destroy the 'default' VM? [y/N] y
+    ==> default: Destroying VM and associated drives...
+    ```
