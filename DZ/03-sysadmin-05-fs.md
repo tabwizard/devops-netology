@@ -46,11 +46,124 @@
     end
     ```
 
-    Данная конфигурация создаст новую виртуальную машину с двумя дополнительными неразмеченными дисками по 2.5 Гб.
+    Данная конфигурация создаст новую виртуальную машину с двумя дополнительными неразмеченными дисками по 2.5 Гб.  
 
-1. Используя `fdisk`, разбейте первый диск на 2 раздела: 2 Гб, оставшееся пространство.
+    __ОТВЕТ:__
 
-1. Используя `sfdisk`, перенесите данную таблицу разделов на второй диск.
+    ```bash
+    ➜  Vagrant vagrant destroy
+        default: Are you sure you want to destroy the 'default' VM? [y/N] y
+    ==> default: Destroying VM and associated drives...
+
+    ➜  Vagrant vim Vagrantfile
+    ...
+    ➜  Vagrant cat Vagrantfile
+    Vagrant.configure("2") do |config|
+        config.vm.box = "bento/ubuntu-20.04"
+        config.vm.provider :virtualbox do |vb|
+            lvm_experiments_disk0_path = "/tmp/lvm_experiments_disk0.vmdk"
+            lvm_experiments_disk1_path = "/tmp/lvm_experiments_disk1.vmdk"
+            vb.customize ['createmedium', '--filename', lvm_experiments_disk0_path, '--size', 2560]
+            vb.customize ['createmedium', '--filename', lvm_experiments_disk1_path, '--size', 2560]
+            vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', lvm_experiments_disk0_path]
+            vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 2, '--device', 0, '--type', 'hdd', '--medium', lvm_experiments_disk1_path]
+        end
+    end
+
+    ➜  Vagrant vagrant up
+    Bringing machine 'default' up with 'virtualbox' provider...
+    ==> default: Importing base box 'bento/ubuntu-20.04'...
+    ==> default: Matching MAC address for NAT networking...
+    ==> default: Checking if box 'bento/ubuntu-20.04' version '202012.23.0' is up to date...
+    ==> default: Setting the name of the VM: Vagrant_default_1619510754062_59976
+    ==> default: Clearing any previously set network interfaces...
+    ==> default: Preparing network interfaces based on configuration...
+        default: Adapter 1: nat
+    ==> default: Forwarding ports...
+        default: 22 (guest) => 2222 (host) (adapter 1)
+    ==> default: Running 'pre-boot' VM customizations...
+    ==> default: Booting VM...
+    ==> default: Waiting for machine to boot. This may take a few minutes...
+        default: SSH address: 127.0.0.1:2222
+        default: SSH username: vagrant
+        default: SSH auth method: private key
+        default:
+        default: Vagrant insecure key detected. Vagrant will automatically replace
+        default: this with a newly generated keypair for better security.
+        default:
+        default: Inserting generated public key within guest...
+        default: Removing insecure key from the guest if it's present...
+        default: Key inserted! Disconnecting and reconnecting using new SSH key...
+    ==> default: Machine booted and ready!
+    ==> default: Checking for guest additions in VM...
+    ==> default: Mounting shared folders...
+        default: /vagrant => /home/wizard/Vagrant
+    ```
+
+1. Используя `fdisk`, разбейте первый диск на 2 раздела: 2 Гб, оставшееся пространство.  
+
+    __ОТВЕТ:__
+
+    ```bash
+    vagrant@vagrant:~$ sudo -i
+    root@vagrant:~# fdisk -l|grep /dev/sd
+    Disk /dev/sda: 64 GiB, 68719476736 bytes, 134217728 sectors
+    /dev/sda1  *       2048   1050623   1048576  512M  b W95 FAT32
+    /dev/sda2       1052670 134215679 133163010 63.5G  5 Extended
+    /dev/sda5       1052672 134215679 133163008 63.5G 8e Linux LVM
+    Disk /dev/sdb: 2.51 GiB, 2684354560 bytes, 5242880 sectors
+    Disk /dev/sdc: 2.51 GiB, 2684354560 bytes, 5242880 sectors
+    root@vagrant:~# fdisk /dev/sdb
+    ...
+    root@vagrant:~# fdisk -l /dev/sdb
+    Disk /dev/sdb: 2.51 GiB, 2684354560 bytes, 5242880 sectors
+    Disk model: VBOX HARDDISK
+    Units: sectors of 1 * 512 = 512 bytes
+    Sector size (logical/physical): 512 bytes / 512 bytes
+    I/O size (minimum/optimal): 512 bytes / 512 bytes
+    Disklabel type: dos
+    Disk identifier: 0x60965661
+
+    Device     Boot   Start     End Sectors  Size Id Type
+    /dev/sdb1          2048 4196351 4194304    2G 83 Linux
+    /dev/sdb2       4196352 5242879 1046528  511M 83 Linux
+    ```
+
+1. Используя `sfdisk`, перенесите данную таблицу разделов на второй диск.  
+
+    __ОТВЕТ:__
+
+    ```bash
+    root@vagrant:~# sfdisk -d /dev/sdb | sfdisk /dev/sdc
+    Checking that no-one is using this disk right now ... OK
+
+    Disk /dev/sdc: 2.51 GiB, 2684354560 bytes, 5242880 sectors
+    Disk model: VBOX HARDDISK
+    Units: sectors of 1 * 512 = 512 bytes
+    Sector size (logical/physical): 512 bytes / 512 bytes
+    I/O size (minimum/optimal): 512 bytes / 512 bytes
+
+    >>> Script header accepted.
+    >>> Script header accepted.
+    >>> Script header accepted.
+    >>> Script header accepted.
+    >>> Created a new DOS disklabel with disk identifier 0x60965661.
+    /dev/sdc1: Created a new partition 1 of type 'Linux' and of size 2 GiB.
+    /dev/sdc2: Created a new partition 2 of type 'Linux' and of size 511 MiB.
+    /dev/sdc3: Done.
+
+    New situation:
+    Disklabel type: dos
+    Disk identifier: 0x60965661
+
+    Device     Boot   Start     End Sectors  Size Id Type
+    /dev/sdc1          2048 4196351 4194304    2G 83 Linux
+    /dev/sdc2       4196352 5242879 1046528  511M 83 Linux
+
+    The partition table has been altered.
+    Calling ioctl() to re-read partition table.
+    Syncing disks.
+    ```
 
 1. Соберите `mdadm` RAID1 на паре разделов 2 Гб.
 
