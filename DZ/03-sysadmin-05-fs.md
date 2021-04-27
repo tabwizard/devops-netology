@@ -366,13 +366,60 @@
     root@vagrant:~# gzip -t /tmp/new/test.gz
     root@vagrant:~# echo $?
     0
+    ```  
+
+    __ОТВЕТ:__
+    [![Screenshot_20210427_175005.png](https://github.com/tabwizard/devops-netology/raw/03-sysadmin-05-fs/img/Screenshot_20210427_175005.png)](https://github.com/tabwizard/devops-netology/raw/03-sysadmin-05-fs/img/Screenshot_20210427_175005.png)
+
+1. Используя pvmove, переместите содержимое PV с RAID0 на RAID1.  
+
+    __ОТВЕТ:__
+
+    ```bash
+    root@vagrant:~# pvmove -n lv00 /dev/md0
+      /dev/md0: Moved: 12.00%
+      /dev/md0: Moved: 100.00%
+    root@vagrant:~# lsblk
+    NAME                 MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
+    sda                    8:0    0   64G  0 disk
+    ├─sda1                 8:1    0  512M  0 part  /boot/efi
+    ├─sda2                 8:2    0    1K  0 part
+    └─sda5                 8:5    0 63.5G  0 part
+      ├─vgvagrant-root   253:0    0 62.6G  0 lvm   /
+      └─vgvagrant-swap_1 253:1    0  980M  0 lvm   [SWAP]
+    sdb                    8:16   0  2.5G  0 disk
+    ├─sdb1                 8:17   0    2G  0 part
+    │ └─md1                9:1    0    2G  0 raid1
+    │   └─vg00-lv00      253:2    0  100M  0 lvm   /tmp/new
+    └─sdb2                 8:18   0  511M  0 part
+      └─md0                9:0    0 1018M  0 raid0
+    sdc                    8:32   0  2.5G  0 disk
+    ├─sdc1                 8:33   0    2G  0 part
+    │ └─md1                9:1    0    2G  0 raid1
+    │   └─vg00-lv00      253:2    0  100M  0 lvm   /tmp/new
+    └─sdc2                 8:34   0  511M  0 part
+      └─md0                9:0    0 1018M  0 raid0
     ```
 
-1. Используя pvmove, переместите содержимое PV с RAID0 на RAID1.
+1. Сделайте `--fail` на устройство в вашем RAID1 md.  
 
-1. Сделайте `--fail` на устройство в вашем RAID1 md.
+    __ОТВЕТ:__
 
-1. Подтвердите выводом `dmesg`, что RAID1 работает в деградированном состоянии.
+    ```bash
+    root@vagrant:~# mdadm /dev/md1 --fail /dev/sdb1 
+    mdadm: set /dev/sdb1 faulty in /dev/md1
+    ```
+
+1. Подтвердите выводом `dmesg`, что RAID1 работает в деградированном состоянии.  
+
+    __ОТВЕТ:__
+
+    ```bash
+    root@vagrant:~# dmesg -T|tail -3
+    [Tue Apr 27 10:42:45 2021] ext4 filesystem being mounted at /tmp/new supports timestamps until 2038 (0x7fffffff)
+    [Tue Apr 27 11:07:11 2021] md/raid1:md1: Disk failure on sdb1, disabling device.
+                               md/raid1:md1: Operation continuing on 1 devices.
+    ```
 
 1. Протестируйте целостность файла, несмотря на "сбойный" диск он должен продолжать быть доступен:
 
@@ -380,6 +427,9 @@
     root@vagrant:~# gzip -t /tmp/new/test.gz
     root@vagrant:~# echo $?
     0
-    ```
+    ```  
+
+    __ОТВЕТ:__
+    [![Screenshot_20210427_175005.png](https://github.com/tabwizard/devops-netology/raw/03-sysadmin-05-fs/img/Screenshot_20210427_175005.png)](https://github.com/tabwizard/devops-netology/raw/03-sysadmin-05-fs/img/Screenshot_20210427_175005.png)
 
 1. Погасите тестовый хост, `vagrant destroy`.
