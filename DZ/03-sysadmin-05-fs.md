@@ -51,13 +51,13 @@
     __ОТВЕТ:__
 
     ```bash
-    ➜  Vagrant vagrant destroy
+    wizard:Vagrant/ $ vagrant destroy
         default: Are you sure you want to destroy the 'default' VM? [y/N] y
     ==> default: Destroying VM and associated drives...
 
-    ➜  Vagrant vim Vagrantfile
+    wizard:Vagrant/ $ vim Vagrantfile
     ...
-    ➜  Vagrant cat Vagrantfile
+    wizard:Vagrant/ $ cat Vagrantfile
     Vagrant.configure("2") do |config|
         config.vm.box = "bento/ubuntu-20.04"
         config.vm.provider :virtualbox do |vb|
@@ -70,7 +70,7 @@
         end
     end
 
-    ➜  Vagrant vagrant up
+    wizard:Vagrant/ $ vagrant up
     Bringing machine 'default' up with 'virtualbox' provider...
     ==> default: Importing base box 'bento/ubuntu-20.04'...
     ==> default: Matching MAC address for NAT networking...
@@ -279,13 +279,86 @@
       swap_1 vgvagrant -wi-ao---- 980.00m
     ```
 
-1. Создайте `mkfs.ext4` ФС на получившемся LV.
+1. Создайте `mkfs.ext4` ФС на получившемся LV.  
 
-1. Смонтируйте этот раздел в любую директорию, например, `/tmp/new`.
+    __ОТВЕТ:__
 
-1. Поместите туда тестовый файл, например `wget https://mirror.yandex.ru/ubuntu/ls-lR.gz -O /tmp/new/test.gz`.
+    ```bash
+    root@vagrant:~# mkfs.ext4 /dev/mapper/vg00-lv00
+    mke2fs 1.45.5 (07-Jan-2020)
+    Creating filesystem with 25600 4k blocks and 25600 inodes
 
-1. Прикрепите вывод `lsblk`.
+    Allocating group tables: done
+    Writing inode tables: done
+    Creating journal (1024 blocks): done
+    Writing superblocks and filesystem accounting information: done
+    ```
+
+1. Смонтируйте этот раздел в любую директорию, например, `/tmp/new`.  
+
+    __ОТВЕТ:__
+
+    ```bash
+    root@vagrant:~# mkdir /tmp/new
+    root@vagrant:~# mount /dev/mapper/vg00-lv00 /tmp/new
+    root@vagrant:~# df -h
+    Filesystem                  Size  Used Avail Use% Mounted on
+    udev                        448M     0  448M   0% /dev
+    tmpfs                        99M  692K   98M   1% /run
+    /dev/mapper/vgvagrant-root   62G  1.4G   57G   3% /
+    tmpfs                       491M     0  491M   0% /dev/shm
+    tmpfs                       5.0M     0  5.0M   0% /run/lock
+    tmpfs                       491M     0  491M   0% /sys/fs/cgroup
+    /dev/sda1                   511M  4.0K  511M   1% /boot/efi
+    vagrant                     110G   95G   15G  87% /vagrant
+    tmpfs                        99M     0   99M   0% /run/user/1000
+    /dev/mapper/vg00-lv00        93M   72K   86M   1% /tmp/new
+    ```
+
+1. Поместите туда тестовый файл, например `wget https://mirror.yandex.ru/ubuntu/ls-lR.gz -O /tmp/new/test.gz`.  
+
+    __ОТВЕТ:__
+
+    ```bash
+    root@vagrant:~# wget https://mirror.yandex.ru/ubuntu/ls-lR.gz -O /tmp/new/test.gz
+    --2021-04-27 10:43:55--  https://mirror.yandex.ru/ubuntu/ls-lR.gz
+    Resolving mirror.yandex.ru (mirror.yandex.ru)... 213.180.204.183, 2a02:6b8::183
+    Connecting to mirror.yandex.ru (mirror.yandex.ru)|213.180.204.183|:443... connected.
+    HTTP request sent, awaiting response... 200 OK
+    Length: 20404956 (19M) [application/octet-stream]
+    Saving to: ‘/tmp/new/test.gz’
+
+    /tmp/new/test.gz                      100%[======================================================================>]  19.46M  11.8MB/s    in 1.6s
+
+    2021-04-27 10:43:57 (11.8 MB/s) - ‘/tmp/new/test.gz’ saved [20404956/20404956]
+    ```
+
+1. Прикрепите вывод `lsblk`.  
+
+    __ОТВЕТ:__
+
+    ```bash
+    root@vagrant:~# lsblk
+    NAME                 MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
+    sda                    8:0    0   64G  0 disk
+    ├─sda1                 8:1    0  512M  0 part  /boot/efi
+    ├─sda2                 8:2    0    1K  0 part
+    └─sda5                 8:5    0 63.5G  0 part
+      ├─vgvagrant-root   253:0    0 62.6G  0 lvm   /
+      └─vgvagrant-swap_1 253:1    0  980M  0 lvm   [SWAP]
+    sdb                    8:16   0  2.5G  0 disk
+    ├─sdb1                 8:17   0    2G  0 part
+    │ └─md1                9:1    0    2G  0 raid1
+    └─sdb2                 8:18   0  511M  0 part
+      └─md0                9:0    0 1018M  0 raid0
+        └─vg00-lv00      253:2    0  100M  0 lvm   /tmp/new
+    sdc                    8:32   0  2.5G  0 disk
+    ├─sdc1                 8:33   0    2G  0 part
+    │ └─md1                9:1    0    2G  0 raid1
+    └─sdc2                 8:34   0  511M  0 part
+      └─md0                9:0    0 1018M  0 raid0
+        └─vg00-lv00      253:2    0  100M  0 lvm   /tmp/new
+    ```
 
 1. Протестируйте целостность файла:
 
