@@ -125,8 +125,8 @@
     Disk identifier: 0x60965661
 
     Device     Boot   Start     End Sectors  Size Id Type
-    /dev/sdb1          2048 4196351 4194304    2G 83 Linux
-    /dev/sdb2       4196352 5242879 1046528  511M 83 Linux
+    /dev/sdb1          2048 4196351 4194304    2G fd Linux raid autodetect
+    /dev/sdb2       4196352 5242879 1046528  511M fd Linux raid autodetect
     ```
 
 1. Используя `sfdisk`, перенесите данную таблицу разделов на второй диск.  
@@ -142,14 +142,18 @@
     Units: sectors of 1 * 512 = 512 bytes
     Sector size (logical/physical): 512 bytes / 512 bytes
     I/O size (minimum/optimal): 512 bytes / 512 bytes
+    Disklabel type: dos
+    Disk identifier: 0x60965661
+
+    Old situation:
 
     >>> Script header accepted.
     >>> Script header accepted.
     >>> Script header accepted.
     >>> Script header accepted.
     >>> Created a new DOS disklabel with disk identifier 0x60965661.
-    /dev/sdc1: Created a new partition 1 of type 'Linux' and of size 2 GiB.
-    /dev/sdc2: Created a new partition 2 of type 'Linux' and of size 511 MiB.
+    /dev/sdc1: Created a new partition 1 of type 'Linux raid autodetect' and of size 2 GiB.
+    /dev/sdc2: Created a new partition 2 of type 'Linux raid autodetect' and of size 511 MiB.
     /dev/sdc3: Done.
 
     New situation:
@@ -157,23 +161,123 @@
     Disk identifier: 0x60965661
 
     Device     Boot   Start     End Sectors  Size Id Type
-    /dev/sdc1          2048 4196351 4194304    2G 83 Linux
-    /dev/sdc2       4196352 5242879 1046528  511M 83 Linux
+    /dev/sdc1          2048 4196351 4194304    2G fd Linux raid autodetect
+    /dev/sdc2       4196352 5242879 1046528  511M fd Linux raid autodetect
 
     The partition table has been altered.
     Calling ioctl() to re-read partition table.
     Syncing disks.
     ```
 
-1. Соберите `mdadm` RAID1 на паре разделов 2 Гб.
+1. Соберите `mdadm` RAID1 на паре разделов 2 Гб.  
 
-1. Соберите `mdadm` RAID0 на второй паре маленьких разделов.
+    __ОТВЕТ:__
 
-1. Создайте 2 независимых PV на получившихся md-устройствах.
+    ```bash
+    root@vagrant:~# mdadm --create --verbose /dev/md1 --level=1  --raid-devices=2 /dev/sdb1 /dev/sdc1
+    mdadm: Note: this array has metadata at the start and
+        may not be suitable as a boot device.  If you plan to
+        store '/boot' on this device please ensure that
+        your boot-loader understands md/v1.x metadata, or use
+        --metadata=0.90
+    mdadm: size set to 2094080K
+    Continue creating array? y
+    mdadm: Defaulting to version 1.2 metadata
+    mdadm: array /dev/md1 started.
 
-1. Создайте общую volume-group на этих двух PV.
+    root@vagrant:~# cat /proc/mdstat
+    Personalities : [linear] [multipath] [raid0] [raid1] [raid6] [raid5] [raid4] [raid10]
+    md1 : active raid1 sdc1[1] sdb1[0]
+        2094080 blocks super 1.2 [2/2] [UU]
 
-1. Создайте LV размером 100 Мб, указав его расположение на PV с RAID0.
+    unused devices: <none>
+    ```
+
+1. Соберите `mdadm` RAID0 на второй паре маленьких разделов.  
+
+    __ОТВЕТ:__
+
+    ```bash
+    root@vagrant:~# mdadm --create --verbose /dev/md0 --level=0  --raid-devices=2 /dev/sdb2 /dev/sdc2
+    mdadm: chunk size defaults to 512K
+    mdadm: Defaulting to version 1.2 metadata
+    mdadm: array /dev/md0 started.
+
+    root@vagrant:~# cat /proc/mdstat
+    Personalities : [linear] [multipath] [raid0] [raid1] [raid6] [raid5] [raid4] [raid10]
+    md0 : active raid0 sdc2[1] sdb2[0]
+        1042432 blocks super 1.2 512k chunks
+
+    md1 : active raid1 sdc1[1] sdb1[0]
+        2094080 blocks super 1.2 [2/2] [UU]
+
+    unused devices: <none>
+    ```
+
+1. Создайте 2 независимых PV на получившихся md-устройствах.  
+
+    __ОТВЕТ:__
+
+    ```bash
+    root@vagrant:~# pvcreate /dev/md0
+      Physical volume "/dev/md0" successfully created.
+    root@vagrant:~# pvcreate /dev/md1
+      Physical volume "/dev/md1" successfully created.
+
+    root@vagrant:~# pvs
+    PV         VG        Fmt  Attr PSize    PFree
+    /dev/md0             lvm2 ---  1018.00m 1018.00m
+    /dev/md1             lvm2 ---    <2.00g   <2.00g
+    /dev/sda5  vgvagrant lvm2 a--   <63.50g       0
+    ```
+
+1. Создайте общую volume-group на этих двух PV.  
+
+    __ОТВЕТ:__
+
+    ```bash
+    root@vagrant:~# vgcreate vg00 /dev/md0 /dev/md1
+      Volume group "vg00" successfully created
+    
+    root@vagrant:~# vgs
+    VG        #PV #LV #SN Attr   VSize   VFree
+    vg00        2   0   0 wz--n-  <2.99g <2.99g
+    vgvagrant   1   2   0 wz--n- <63.50g     0
+    ```
+
+1. Создайте LV размером 100 Мб, указав его расположение на PV с RAID0.  
+
+    __ОТВЕТ:__
+
+    ```bash
+    root@vagrant:~# lvcreate -L100 -n lv00 vg00 /dev/md0
+      Logical volume "lv00" created.
+    root@vagrant:~# lsblk
+    NAME                 MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
+    sda                    8:0    0   64G  0 disk
+    ├─sda1                 8:1    0  512M  0 part  /boot/efi
+    ├─sda2                 8:2    0    1K  0 part
+    └─sda5                 8:5    0 63.5G  0 part
+      ├─vgvagrant-root   253:0    0 62.6G  0 lvm   /
+      └─vgvagrant-swap_1 253:1    0  980M  0 lvm   [SWAP]
+    sdb                    8:16   0  2.5G  0 disk
+    ├─sdb1                 8:17   0    2G  0 part
+    │ └─md1                9:1    0    2G  0 raid1
+    └─sdb2                 8:18   0  511M  0 part
+      └─md0                9:0    0 1018M  0 raid0
+        └─vg00-lv00      253:2    0  100M  0 lvm
+    sdc                    8:32   0  2.5G  0 disk
+    ├─sdc1                 8:33   0    2G  0 part
+    │ └─md1                9:1    0    2G  0 raid1
+    └─sdc2                 8:34   0  511M  0 part
+      └─md0                9:0    0 1018M  0 raid0
+        └─vg00-lv00      253:2    0  100M  0 lvm
+    root@vagrant:~# lvs
+      LV     VG        Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+      lv00   vg00      -wi-a----- 100.00m
+      root   vgvagrant -wi-ao---- <62.54g
+      swap_1 vgvagrant -wi-ao---- 980.00m
+    ```
 
 1. Создайте `mkfs.ext4` ФС на получившемся LV.
 
