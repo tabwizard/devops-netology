@@ -368,7 +368,7 @@
     0
     ```  
 
-    __ОТВЕТ:__
+    __ОТВЕТ:__  
     [![Screenshot_20210427_175005.png](https://github.com/tabwizard/devops-netology/raw/03-sysadmin-05-fs/img/Screenshot_20210427_175005.png)](https://github.com/tabwizard/devops-netology/raw/03-sysadmin-05-fs/img/Screenshot_20210427_175005.png)
 
 1. Используя pvmove, переместите содержимое PV с RAID0 на RAID1.  
@@ -429,7 +429,7 @@
     0
     ```  
 
-    __ОТВЕТ:__
+    __ОТВЕТ:__  
     [![Screenshot_20210427_181328.png](https://github.com/tabwizard/devops-netology/raw/03-sysadmin-05-fs/img/Screenshot_20210427_181328.png)](https://github.com/tabwizard/devops-netology/raw/03-sysadmin-05-fs/img/Screenshot_20210427_181328.png)
 
 1. Погасите тестовый хост, `vagrant destroy`.  
