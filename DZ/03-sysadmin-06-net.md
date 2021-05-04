@@ -95,4 +95,8 @@
 
     vagrant@vagrant:~$ sudo tcpdump -A -c 100 -i eth0 -w ./tcpdump.log
     ```
-    В заголовке IPv4 существует 3 бита флагов. 
+
+    В заголовке IPv4 существует 3 бита флагов. Первый бит должен быть всегда равен нулю, второй бит DF (don’t fragment) определяет возможность фрагментации пакета и третий бит MF (more fragments) показывает, не является ли этот пакет последним в цепочке пакетов.  
+    [![2021-05-04_12-33-40_tcpdump.png](https://raw.githubusercontent.com/tabwizard/devops-netology/main/img/2021-05-04_12-33-40_tcpdump.png)](https://github.com/tabwizard/devops-netology/blob/main/img/2021-05-04_12-33-40_tcpdump.png)  
+    На самом деле стандарт Ethernet называется [IEEE 802.3](https://ru.wikipedia.org/wiki/Ethernet) вернее так называется группа стандартов.  
+    OUI можно увидеть в полях Src, Dst в составе MAC (первые 3 октета) и так же в текстовом виде, на скриншоте `PcsCompu` и `RealtecU`
