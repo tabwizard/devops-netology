@@ -1,5 +1,7 @@
-###[НЕТОЛОГИЯ](https://netology.ru)
-# DEVOPS-8
+# [НЕТОЛОГИЯ](https://netology.ru)
 
-### студент Пирожков А.А.
-Домашние работы по курсу программы профессиональной подготовки "DevOps-инженер" находятся в папке [homework](https://github.com/tabwizard/devops-netology/tree/main/DZ "Домашние работы")
+## DEVOPS-8
+
+### студент Пирожков А.А
+
+Домашние работы по курсу программы профессиональной подготовки "DevOps-инженер" находятся в папке [homework](https://github.com/tabwizard/devops-netology/tree/main/homework "Домашние работы")
