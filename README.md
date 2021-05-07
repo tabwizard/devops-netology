@@ -1,12 +1,5 @@
-# devops-netology
-Домашнее задание 02-git-01-vcs
+###[НЕТОЛОГИЯ](https://netology.ru)
+# DEVOPS-8
 
-### С помощью файла /terraform/.gitignore будут проигнорированы файлы:
-- любые файлы в каталогах `.terraform` в любом месте репозитария
-- в каталоге `terraform`:
-  - файлы с расширением `.tfstate` и файлы содержащие `.tfstate.` в названии 
-  - файл `crash.log`
-  - файлы с расширением `.tfvars`
-  - файлы `override.tf` и `override.tf.json`
-  - файлы, название которых заканчивается на `_override.tf` и `_override.tf.json`
-  - скрытый файл `.terraformrc` и файл `terraform.rc`
+### студент Пирожков А.А.
+Домашние работы по курсу программы профессиональной подготовки "DevOps-инженер" находятся в папке [homework](https://github.com/tabwizard/devops-netology/tree/main/DZ "Домашние работы")
