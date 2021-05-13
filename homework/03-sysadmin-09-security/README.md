@@ -77,44 +77,7 @@
 
     2021-05-13T03:06:33.914Z [INFO]  proxy environment: http_proxy= https_proxy= no_proxy=
     2021-05-13T03:06:33.914Z [WARN]  no `api_addr` value specified in config or in VAULT_API_ADDR; falling back to detection if possible, but this value should be manually set
-    2021-05-13T03:06:33.925Z [INFO]  core: security barrier not initialized
-    2021-05-13T03:06:33.925Z [INFO]  core: security barrier initialized: stored=1 shares=1 threshold=1
-    2021-05-13T03:06:33.926Z [INFO]  core: post-unseal setup starting
-    2021-05-13T03:06:33.949Z [INFO]  core: loaded wrapping token key
-    2021-05-13T03:06:33.949Z [INFO]  core: successfully setup plugin catalog: plugin-directory=
-    2021-05-13T03:06:33.949Z [INFO]  core: no mounts; adding default mount table
-    2021-05-13T03:06:33.951Z [INFO]  core: successfully mounted backend: type=cubbyhole path=cubbyhole/
-    2021-05-13T03:06:33.951Z [INFO]  core: successfully mounted backend: type=system path=sys/
-    2021-05-13T03:06:33.951Z [INFO]  core: successfully mounted backend: type=identity path=identity/
-    2021-05-13T03:06:33.953Z [INFO]  core: successfully enabled credential backend: type=token path=token/
-    2021-05-13T03:06:33.954Z [INFO]  core: restoring leases
-    2021-05-13T03:06:33.956Z [INFO]  rollback: starting rollback manager
-    2021-05-13T03:06:33.957Z [INFO]  expiration: lease restore complete
-    2021-05-13T03:06:33.957Z [INFO]  identity: entities restored
-    2021-05-13T03:06:33.957Z [INFO]  identity: groups restored
-    2021-05-13T03:06:33.957Z [INFO]  core: post-unseal setup complete
-    2021-05-13T03:06:33.958Z [INFO]  core: root token generated
-    2021-05-13T03:06:33.958Z [INFO]  core: pre-seal teardown starting
-    2021-05-13T03:06:33.959Z [INFO]  rollback: stopping rollback manager
-    2021-05-13T03:06:33.959Z [INFO]  core: pre-seal teardown complete
-    2021-05-13T03:06:33.959Z [INFO]  core.cluster-listener.tcp: starting listener: listener_address=0.0.0.0:8201
-    2021-05-13T03:06:33.959Z [INFO]  core.cluster-listener: serving cluster requests: cluster_listen_address=[::]:8201
-    2021-05-13T03:06:33.959Z [INFO]  core: post-unseal setup starting
-    2021-05-13T03:06:33.960Z [INFO]  core: loaded wrapping token key
-    2021-05-13T03:06:33.960Z [INFO]  core: successfully setup plugin catalog: plugin-directory=
-    2021-05-13T03:06:33.960Z [INFO]  core: successfully mounted backend: type=system path=sys/
-    2021-05-13T03:06:33.961Z [INFO]  core: successfully mounted backend: type=identity path=identity/
-    2021-05-13T03:06:33.961Z [INFO]  core: successfully mounted backend: type=cubbyhole path=cubbyhole/
-    2021-05-13T03:06:33.963Z [INFO]  core: successfully enabled credential backend: type=token path=token/
-    2021-05-13T03:06:33.964Z [INFO]  core: restoring leases
-    2021-05-13T03:06:33.967Z [INFO]  identity: entities restored
-    2021-05-13T03:06:33.967Z [INFO]  identity: groups restored
-    2021-05-13T03:06:33.967Z [INFO]  core: post-unseal setup complete
-    2021-05-13T03:06:33.967Z [INFO]  core: vault is unsealed
-    2021-05-13T03:06:33.971Z [INFO]  core: successful mount: namespace= path=secret/ type=kv
-    2021-05-13T03:06:33.978Z [INFO]  expiration: lease restore complete
-    2021-05-13T03:06:33.979Z [INFO]  secrets.kv.kv_be0f68fd: collecting keys to upgrade
-    2021-05-13T03:06:33.979Z [INFO]  secrets.kv.kv_be0f68fd: done collecting keys: num_keys=1
+    ...
     2021-05-13T03:06:33.979Z [INFO]  secrets.kv.kv_be0f68fd: upgrading keys finished
     2021-05-13T03:06:33.980Z [INFO]  rollback: starting rollback manager
     WARNING! dev mode is enabled! In this mode, Vault runs entirely in-memory
@@ -128,16 +91,84 @@
     The unseal key and root token are displayed below in case you want to
     seal/unseal the Vault or re-authenticate.
 
-    Unseal Key: xXuCyJXHCeV3A5kOYXZtGYdi1CTC3d+YA+IeribAUvI=
-    Root Token: s.8b0Btcqq7E1k4dRUhZdELWBd
+    Unseal Key: miBjfaq4hIa4EnjXh3N2Xc3G5dK9VYMcYAM/u8o8xkk=
+    Root Token: s.mV4e2Exb9nbguE6OXelWmzx4
+
 
     Development mode should NOT be used in production installations!
     vagrant@vagrant:~$
+    vagrant@vagrant:~$ export VAULT_ADDR='http://127.0.0.1:8200'
+    vagrant@vagrant:~$ export VAULT_TOKEN=s.mV4e2Exb9nbguE6OXelWmzx4
     ```
 
 1. Используя [PKI Secrets Engine](https://www.vaultproject.io/docs/secrets/pki), создайте Root CA и Intermediate CA.
-Обратите внимание на [дополнительные материалы](https://learn.hashicorp.com/tutorials/vault/pki-engine) по созданию CA в Vault, если с изначальной инструкцией возникнут сложности.
-1. Согласно этой же инструкции, подпишите Intermediate CA csr на сертификат для тестового домена (например, `netology.example.com` если действовали согласно инструкции).
+Обратите внимание на [дополнительные материалы](https://learn.hashicorp.com/tutorials/vault/pki-engine) по созданию CA в Vault, если с изначальной инструкцией возникнут сложности.  
+
+    __ОТВЕТ:__ Создаём Root CA:  
+
+    ```bash
+    vagrant@vagrant:~$ vault secrets enable pki
+    2021-05-13T03:32:19.278Z [INFO]  core: successful mount: namespace= path=pki/ type=pki
+    Success! Enabled the pki secrets engine at: pki/
+    vagrant@vagrant:~$ vault secrets tune -max-lease-ttl=87600h pki
+    2021-05-13T03:32:31.207Z [INFO]  core: mount tuning of leases successful: path=pki/
+    Success! Tuned the secrets engine at: pki/
+    vagrant@vagrant:~$ vault write -field=certificate pki/root/generate/internal common_name="example.com" ttl=87600h > CA_cert.crt
+    vagrant@vagrant:~$ vault write pki/config/urls issuing_certificates="$VAULT_ADDR/v1/pki/ca" crl_distribution_points="$VAULT_ADDR/v1/pki/crl"
+    Success! Data written to: pki/config/urls
+    ```
+
+    и Intermediate CA:  
+
+    ```bash
+    vagrant@vagrant:~$ vault secrets enable -path=pki_int pki
+    2021-05-13T03:38:58.326Z [INFO]  core: successful mount: namespace= path=pki_int/ type=pki
+    Success! Enabled the pki secrets engine at: pki_int/
+    vagrant@vagrant:~$ vault secrets tune -max-lease-ttl=43800h pki_int
+    2021-05-13T03:39:10.664Z [INFO]  core: mount tuning of leases successful: path=pki_int/
+    Success! Tuned the secrets engine at: pki_int/
+    vagrant@vagrant:~$ sudo apt install jq
+    vagrant@vagrant:~$ vault write -format=json pki_int/intermediate/generate/internal common_name="example.com Intermediate Authority" | jq -r '.data.csr' > pki_intermediate.csr
+    vagrant@vagrant:~$ vault write -format=json pki/root/sign-intermediate csr=@pki_intermediate.csr format=pem_bundle ttl="43800h" | jq -r '.data.certificate' > intermediate.cert.pem
+    vagrant@vagrant:~$ vault write pki_int/intermediate/set-signed certificate=@intermediate.cert.pem
+    Success! Data written to: pki_int/intermediate/set-signed
+    ```
+
+1. Согласно этой же инструкции, подпишите Intermediate CA csr на сертификат для тестового домена (например, `netology.example.com` если действовали согласно инструкции).  
+
+    __ОТВЕТ:__ Подписываем Intermediate CA csr на сертификат для тестового домена `netology.example.com`  
+
+    ```bash
+    vagrant@vagrant:~$ vault write pki_int/roles/example-dot-com allowed_domains="example.com" allow_subdomains=true max_ttl="720h"
+    Success! Data written to: pki_int/roles/example-dot-com
+    vagrant@vagrant:~$ vault write pki_int/issue/example-dot-com common_name="netology.example.com" ttl="24h"
+    Key                 Value
+    ---                 -----
+    ca_chain            [-----BEGIN CERTIFICATE-----
+    MIIDpjCCAo6gAwIBAgIUc/2+bGiwhIXWQKYtXkb3xeHQpw4wDQYJKoZIhvcNAQEL
+    BQAwFjEUMBIGA1UEAxMLZXhhbXBsZS5jb20wHhcNMjEwNTEzMDQzNTMwWhcNMjYw
+    ...
+    -----END CERTIFICATE-----]
+    certificate         -----BEGIN CERTIFICATE-----
+    MIIDbjCCAlagAwIBAgIUUS0EEYGQ93WBzTKE9niMZieq2IEwDQYJKoZIhvcNAQEL
+    BQAwLTErMCkGA1UEAxMiZXhhbXBsZS5jb20gSW50ZXJtZWRpYXRlIEF1dGhvcml0
+    ...
+    -----END CERTIFICATE-----
+    expiration          1620967072
+    issuing_ca          -----BEGIN CERTIFICATE-----
+    MIIDpjCCAo6gAwIBAgIUc/2+bGiwhIXWQKYtXkb3xeHQpw4wDQYJKoZIhvcNAQEL
+    BQAwFjEUMBIGA1UEAxMLZXhhbXBsZS5jb20wHhcNMjEwNTEzMDQzNTMwWhcNMjYw
+    ...
+    -----END CERTIFICATE-----
+    private_key         -----BEGIN RSA PRIVATE KEY-----
+    MIIEogIBAAKCAQEAxyx+JZ+CnLxITxdV0uPt2ji6SQyZHP0kwc/rnohQh18J8NV9
+    5qZrKKJpseu4LZYGHcZ3fYGO4SIWDxKCQ7MWnnh48NnVZhu9lfJBOaghdZjW1jw6
+    ...
+    -----END RSA PRIVATE KEY-----
+    private_key_type    rsa
+    serial_number       51:2d:04:11:81:90:f7:75:81:cd:32:84:f6:78:8c:66:27:aa:d8:81
+    ```
+
 1. Поднимите на localhost nginx, сконфигурируйте default vhost для использования подписанного Vault Intermediate CA сертификата и выбранного вами домена. Сертификат из Vault подложить в nginx руками.
 1. Модифицировав `/etc/hosts` и [системный trust-store](http://manpages.ubuntu.com/manpages/focal/en/man8/update-ca-certificates.8.html), добейтесь безошибочной с точки зрения HTTPS работы curl на ваш тестовый домен (отдающийся с localhost). Рекомендуется добавлять в доверенные сертификаты Intermediate CA. Root CA добавить было бы правильнее, но тогда при конфигурации nginx потребуется включить в цепочку Intermediate, что выходит за рамки лекции. Так же, пожалуйста, не добавляйте в доверенные сам сертификат хоста.
 1. [Ознакомьтесь](https://letsencrypt.org/ru/docs/client-options/) с протоколом ACME и CA Let's encrypt. Если у вас есть во владении доменное имя с платным TLS-сертификатом, который возможно заменить на LE, или же без HTTPS вообще, попробуйте воспользоваться одним из предложенных клиентов, чтобы сделать веб-сайт безопасным (или перестать платить за коммерческий сертификат).
