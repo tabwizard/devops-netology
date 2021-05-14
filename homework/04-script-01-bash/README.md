@@ -33,15 +33,19 @@
     done
     ```  
 
-    __ОТВЕТ:__ Предлагаю `>>` заменить на `>` чтобы в файле сохраняласть только последняя дата проверки и добавить прерывание проверки если сервис стал доступным: `else break`
+    __ОТВЕТ:__ Для экономии места на жестком диске предлагаю установить интервал проверки 60 секунд, сохранять только 100 последних дат проверки и добавить прерывание проверки если сервис стал доступным:
 
     ```bash
+    #!/usr/bin/env bash
     while ((1==1)
     do
       curl https://localhost:4757
     if (($? != 0))
     then
-      date > curl.log
+      tail -n99 curl.log > temp
+      mv temp curl.log
+      date >> curl.log
+      sleep 60
     else
       break
     fi
@@ -53,17 +57,18 @@
     __ОТВЕТ:__
 
     ```bash
+    #!/usr/bin/env bash
     ip_addr=(192.168.0.1 173.194.222.113 87.250.250.242)
     for addr in ${ip_addr[@]}
     do
       for i in {1..5}
       do
-        curl https://$addr:80 &>1 >dev/null
+        curl -m1 http://$addr:80 &>1 >/dev/null
         if (($? == 0))
         then
-          echo -n date $addr:80 available >> ~/log
+          echo $(date) $addr:80 available >> ~/log
         else
-          echo -n date $addr:80 not available >> ~/log
+          echo $(date) $addr:80 NOT available >> ~/log
         fi
       done
     done
@@ -74,15 +79,16 @@
     __ОТВЕТ:__
 
     ```bash
+    #!/usr/bin/env bash
     ip_addr=(192.168.0.1 173.194.222.113 87.250.250.242)
     for addr in ${ip_addr[@]}
     do
       for i in {1..5}
       do
-        curl https://$addr:80 &>1 >dev/null
+        curl http://$addr:80 &>1 >dev/null
         if (($? == 0))
         then
-          echo -n date $addr:80 available >> ~/log
+          echo $(date) $addr:80 available >> ~/log
         else
           echo $addr >> ~/error
           break
