@@ -4,7 +4,8 @@
 
     __ОТВЕТ:__ Есть предположение, что чтобы равномерно распределить трафик в 1.5 Гбит/с по 3 хостам с линками в 1 Гбит/с каждый понадобится задействовать RoundRobin DNS с отдачей на все 3 балансировщика с отдельным `VIP` на каждом. Файлы конфигов для `keepalived` должны выглядеть примерно так [раз](https://github.com/tabwizard/devops-netology/blob/main/homework/03-sysadmin-08-net/3_keepalived_1.conf), [два](https://github.com/tabwizard/devops-netology/blob/main/homework/03-sysadmin-08-net/3_keepalived_2.conf), [три](https://github.com/tabwizard/devops-netology/blob/main/homework/03-sysadmin-08-net/3_keepalived_3.conf).  
 
-    >**Комментарий преподавателя**
+    >**Комментарий преподавателя**  
+    >
     >Добрый день,
     >
     >По первому и второму заданию вопросов нет, всё хорошо.
@@ -18,7 +19,8 @@
     __ОТВЕТ:__ Если один из 3-х балансировщиков выйдет из строя, то один из оставшихся 2-х примет на себя его обязанности и подхватит его `VIP`. В результате трафик распределится следующим образом 1 Гбит/с на балансировщик с 2-мя `VIP` и 0.5 Гбит/с на второй. Учитывая, что объем полезного трафика составляет около 96% получается, что 0.04 Гбит/с останутся необработанными.  
     Принимаем решение увеличить количество `VIP` до 4-х, тогда на первом балансировщике будет 2 `VIP` и трафик 0.75 Гбит/с, а на 2-х других по 0.375 Гбит/с. Файлы конфигов для `keepalived`: [раз](https://github.com/tabwizard/devops-netology/blob/main/homework/03-sysadmin-08-net/3_keepalived_1.conf), [два](https://github.com/tabwizard/devops-netology/blob/main/homework/03-sysadmin-08-net/3_keepalived_2.conf), [три](https://github.com/tabwizard/devops-netology/blob/main/homework/03-sysadmin-08-net/3_keepalived_3.conf).  
 
-    >**Комментарий преподавателя**
+    >**Комментарий преподавателя**  
+    >
     >4 VIP адреса будет ок.
     >
     >Я лично, если нет проблем с количеством адресов, взял бы шесть. =)
