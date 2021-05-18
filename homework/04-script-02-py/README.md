@@ -80,7 +80,7 @@
                 fullpath = result
             if result_os.find('fatal: not a git repository') != -1:
                 print(os.getcwd() + " - not a git repository")
-                sys.exit(1)
+                pass
             if result.find('modified') != -1:
                 prepare_result = result.replace('\tmodified:   ', '')
                 is_change = True
@@ -91,9 +91,8 @@
                 print(fullpath+"/"+prepare_result.strip())
 
     bash_command = ["cd ~/netology/sysadm-homeworks", "pwd", "git add . 2>&1 >/dev/null", "git status"]
-    if os.path.isdir(bash_command[0]):
-        rslt_os = os.popen(' && '.join(bash_command)).read()
-        check_modified(rslt_os)
+    rslt_os = os.popen(' && '.join(bash_command)).read()
+    check_modified(rslt_os)
     if len(sys.argv) > 1 and os.path.isdir(sys.argv[1]):
         bash_command[0] = "cd " + sys.argv[1]
         rslt_os = os.popen(' && '.join(bash_command)).read()
