@@ -4,18 +4,18 @@
 
 1. Есть скрипт:
 
- ```python
+    ```python
     #!/usr/bin/env python3
     a = 1
     b = '2'
     c = a + b
- ```
+     ```
 
-* Какое значение будет присвоено переменной c?
-* Как получить для переменной c значение 12?
-* Как получить для переменной c значение 3?  
+   * Какое значение будет присвоено переменной c?
+   * Как получить для переменной c значение 12?
+   * Как получить для переменной c значение 3?  
 
-    __ОТВЕТ:__ Переменной `c` не будет присвоено значение, будет вызвано исключение:
+    __ОТВЕТ:__ Переменной `c` не будет присвоено значение, будет вызвано исключение приведения типов:
     >TypeError: unsupported operand type(s) for +: 'int' and 'str'
 
     Чтобы получить значение 12 нужно сделать: `c = int(str(a) + b)`
@@ -38,7 +38,7 @@
             break
     ```  
 
-    __ОТВЕТ:__ Предлагаю искать не только `modified` но и `new file`, а так же убрать `break` и добавить полный путь `os. getcwd()`.  
+    __ОТВЕТ:__ Будем искать не только `modified` но и `new file`, а так же уберем `break` и добавим полный путь.  
 
     ```python
     #!/usr/bin/env python3
@@ -108,11 +108,19 @@
     #!/usr/bin/env python3
 
     import socket
-    
-    while True
-    
-    
-        sleep неделя
+    import time
+    import sys
+
+    service_array = {"drive.google.com":"", "mail.google.com":"", "google.com":""}
+    while True:
+        for url, ip in service_array.items():
+            ip_new = socket.gethostbyname(url)
+            if ip != "" and ip != ip_new:
+                sys.stdout.write("[ERROR] " + url + " IP mismatch: " + ip + " " + ip_new + "\n")
+            else:
+                sys.stdout.write(url + "  " + ip_new + "\n")
+            service_array[url] = ip_new
+        time.sleep(60) 
     ```
 
 ## Дополнительное задание (со звездочкой*) - необязательно к выполнению
