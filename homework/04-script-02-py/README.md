@@ -79,7 +79,7 @@
             if fullpath == "":
                 fullpath = result
             if result_os.find('fatal: not a git repository') != -1:
-                print(os.getcwd() + " - not a git repository")
+                print(fullpath + " - not a git repository")
                 pass
             if result.find('modified') != -1:
                 prepare_result = result.replace('\tmodified:   ', '')
