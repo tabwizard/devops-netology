@@ -2,7 +2,7 @@
 
 import os
 
-bash_command = ["cd ~/netology/sysadm-homeworks", "pwd", "git status"]
+bash_command = ["cd ~/netology/sysadm-homeworks", "pwd", "git add . &> /dev/null", "git status"]
 result_os = os.popen(' && '.join(bash_command)).read()
 fullpath = ""
 for result in result_os.split('\n'):

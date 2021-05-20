@@ -21,7 +21,7 @@ def check_modified(result_os):
         if is_change:
             print(fullpath+"/"+prepare_result.strip())
 
-bash_command = ["cd ~/netology/sysadm-homeworks", "pwd", "git add . 2>&1 >/dev/null", "git status"]
+bash_command = ["cd ~/netology/sysadm-homeworks", "pwd", "git add . &> /dev/null", "git status"]
 rslt_os = os.popen(' && '.join(bash_command)).read()
 check_modified(rslt_os)
 if len(sys.argv) > 1 and os.path.isdir(sys.argv[1]):
