@@ -1,2 +1,5 @@
 .idea
 .directory
+.gitignore
+*/.vscode/*
+*/.vscode
