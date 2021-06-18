@@ -113,6 +113,7 @@ The push refers to repository [docker.io/tabwizard/05-virt-03-docker-usage]
 02c055ef67f5: Pushed
 latest: digest: sha256:a4b878910df32fd6423fd95de7a0c0ebffbc7162407db7b9d23e396c3e6cdd75 size: 1573
 ```  
+
 Для проверки запускать docker: `docker run -d -p 8080:80 tabwizard/05-virt-03-docker-usage` Образ [tabwizard/05-virt-03-docker-usage](https://hub.docker.com/repository/docker/tabwizard/05-virt-03-docker-usage)
 
 ## Задача 3
@@ -121,7 +122,55 @@ latest: digest: sha256:a4b878910df32fd6423fd95de7a0c0ebffbc7162407db7b9d23e396c3
 - Запустите второй контейнер из образа debian:latest в фоновом режиме, подключив папку info из текущей рабочей директории на хостовой машине в /info контейнера;
 - Подключитесь к первому контейнеру с помощью exec и создайте текстовый файл любого содержания в /share/info ;
 - Добавьте еще один файл в папку info на хостовой машине;
-- Подключитесь во второй контейнер и отобразите листинг и содержание файлов в /info контейнера.
+- Подключитесь во второй контейнер и отобразите листинг и содержание файлов в /info контейнера.  
+
+__ОТВЕТ:__  
+
+```bash
+wizard:05-virt-03-docker-usage/ (main✗) $ mkdir ./info
+
+wizard:05-virt-03-docker-usage/ (main✗) $ docker run --name centos8 -d -v "$(pwd)"/info:/share/info centos:8 sleep 1200
+Unable to find image 'centos:8' locally
+8: Pulling from library/centos
+7a0437f04f83: Already exists
+Digest: sha256:5528e8b1b1719d34604c87e11dcd1c0a20bedf46e83b5632cdeac91b8c04efc1
+Status: Downloaded newer image for centos:8
+7a520134e2b97a4ef9e759fafa155274ec78b36ff8a53aebdb0f78b1517a3dcc
+
+
+wizard:05-virt-03-docker-usage/ (main✗) $ docker run --name debian -d -v "$(pwd)"/info:/info debian:latest sleep 1200
+Unable to find image 'debian:latest' locally
+latest: Pulling from library/debian
+d960726af2be: Already exists
+Digest: sha256:acf7795dc91df17e10effee064bd229580a9c34213b4dba578d64768af5d8c51
+Status: Downloaded newer image for debian:latest
+c7c6742076cd01a0e0b8882d28c43a2375a32903bf39782f6226099cd0f09b7b
+
+wizard:05-virt-03-docker-usage/ (main✗) $ docker exec -it centos8 bash
+
+[root@7a520134e2b9 /]# echo "from docker centos:8" > /share/info/centos.txt
+[root@7a520134e2b9 /]# exit
+exit
+
+wizard:05-virt-03-docker-usage/ (main✗) $ echo "from host" > ./info/host.txt
+
+wizard:05-virt-03-docker-usage/ (main✗) $ docker exec -it debian bash
+
+root@c7c6742076cd:/# ls -la /info
+total 16
+drwxr-xr-x 2 1000 1000 4096 Jun 18 07:04 .
+drwxr-xr-x 1 root root 4096 Jun 18 07:03 ..
+-rw-r--r-- 1 root root   21 Jun 18 07:04 centos.txt
+-rw-r--r-- 1 1000 1000   10 Jun 18 07:04 host.txt
+
+root@c7c6742076cd:/# cat /info/centos.txt
+from docker centos:8
+root@c7c6742076cd:/# cat /info/host.txt
+from host
+root@c7c6742076cd:/# exit
+exit
+
+```
 
 ---
 
