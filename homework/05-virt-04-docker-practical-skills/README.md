@@ -28,7 +28,7 @@ CMD ["Hey, netology”]
 __ОТВЕТ:__ Делаем Dokerfile. Пакет `ponysay` присутствует в репозитории `community`, поэтому все про установку пакета `software-properties-common` и добавление репозитория `vincent-c/ponysay` убираем и просто ставим пакет с обновлением реп.
 
 ```bash
-cat Dockerfile_1
+wizard:05-virt-04-docker-practical-skills/ $ cat Dockerfile_1
 FROM archlinux:latest
 
 RUN pacman -Sy --noconfirm ponysay
@@ -37,7 +37,7 @@ ENTRYPOINT ["/usr/bin/ponysay"]
 CMD ["Hey, netology”]%                                   
 ```
 ```bash
-docker build -t tabwizard/archlinux_ponysay -f Dockerfile_1 .                                 [12:56:21]
+wizard:05-virt-04-docker-practical-skills/ $ docker build -t tabwizard/archlinux_ponysay -f Dockerfile_1
 Sending build context to Docker daemon   7.68kB
 Step 1/4 : FROM archlinux:latest
 latest: Pulling from library/archlinux
@@ -110,7 +110,7 @@ Successfully tagged tabwizard/archlinux_ponysay:latest
         - Образ должен запускать [Jenkins server](https://www.jenkins.io/download/)
         
     - Спецификация первого образа:
-        - Базовый образ - [amazoncorreto](https://hub.docker.com/_/amazoncorretto)
+        - Базовый образ - [amazoncorretto](https://hub.docker.com/_/amazoncorretto)
         - Присвоить образу тэг `ver1` 
     
     - Спецификация второго образа:
@@ -125,8 +125,70 @@ Successfully tagged tabwizard/archlinux_ponysay:latest
 - Наполнения 2х Dockerfile из задания
 - Скриншоты логов запущенных вами контейнеров (из командной строки)
 - Скриншоты веб-интерфейса Jenkins запущенных вами контейнеров (достаточно 1 скриншота на контейнер)
-- Ссылки на образы в вашем хранилище docker-hub
+- Ссылки на образы в вашем хранилище docker-hub  
 
+__ОТВЕТ amazoncorretto:__  
+Dockerfile amazon:
+
+```dockerfile
+FROM amazoncorretto
+RUN yum update –y && yum install -y wget initscripts ; yum clean all
+RUN wget -O /etc/yum.repos.d/jenkins.repo \
+    https://pkg.jenkins.io/redhat-stable/jenkins.repo
+RUN rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+RUN yum upgrade
+RUN yum install jenkins java-1.8.0-openjdk-devel -y; yum clean all
+COPY start_jenkins.sh /usr/bin/start_jenkins.sh
+RUN chmod +x /usr/bin/start_jenkins.sh
+EXPOSE 8080
+ENTRYPOINT ["/usr/bin/start_jenkins.sh"]
+```
+
+Пусковой файл start_jenkins.sh:
+
+```bash
+#!/bin/bash
+/etc/init.d/jenkins start
+while [ $(pgrep -U jenkins -f jenkins.war | grep -c .) -gt 0 ]
+do
+  sleep 1
+done
+```
+
+[![Screenshot_amazoncorretto_jenkins_logs](./Screenshot_20210623_200145.png)](./Screenshot_20210623_200145.png)  
+[![Screenshot_jenkins_on_8081_port](./Screenshot_20210623_200107.png)](./Screenshot_20210623_200107.png)  
+Запушили образ [tabwizard/amazoncorretto_jenkins](https://hub.docker.com/repository/docker/tabwizard/amazoncorretto_jenkins) в docker-hub.  
+
+__ОТВЕТ ubuntu:latest:__  
+Dockerfile ubuntu_jenkins:
+
+```dockerfile
+FROM ubuntu:latest
+RUN apt-get update && apt-get install -y wget gnupg openjdk-11-jdk sudo && apt-get clean; rm -rf /var/lib/{apt,dpkg,cache,log}/
+RUN wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | apt-key add -
+RUN sh -c 'echo deb https://pkg.jenkins.io/debian-stable binary/ > \
+    /etc/apt/sources.list.d/jenkins.list'
+RUN apt-get update && apt-get install -y jenkins && apt-get clean; rm -rf /var/lib/{apt,dpkg,cache,log}/
+COPY ubuntu_jenkins.sh /usr/bin/start_jenkins.sh
+RUN chmod +x /usr/bin/start_jenkins.sh
+EXPOSE 8080
+ENTRYPOINT ["/usr/bin/start_jenkins.sh"]
+```
+
+Пусковой файл start_jenkins.sh:
+
+```bash
+#!/bin/bash
+/etc/init.d/jenkins start
+while [ $(pgrep -U jenkins -f jenkins.war | grep -c .) -gt 0 ]
+do
+  sleep 1
+done
+```
+
+[![Screenshot_ubuntujenkins_logs](./Screenshot_20210623_181557.png)](./Screenshot_20210623_181557.png)  
+[![Screenshot_jenkins_on_8082_port](./Screenshot_20210623_180902.png)](./Screenshot_20210623_180902.png)  
+Запушили образ [tabwizard/ubuntu_jenkins](https://hub.docker.com/repository/docker/tabwizard/ubuntu_jenkins) в docker-hub.
 ## Задача 3 
 
 В данном задании вы научитесь:
