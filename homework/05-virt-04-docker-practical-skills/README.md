@@ -265,7 +265,8 @@ Date: Thu, 24 Jun 2021 00:04:13 GMT
 Connection: keep-alive
 Keep-Alive: timeout=5
 ```
-[![](./Screenshot_20210624_065946.png)](./Screenshot_20210624_065946.png)
+
+[![Screenshot_20210624_065946.png](./Screenshot_20210624_065946.png)](./Screenshot_20210624_065946.png)
 ---
 
 ### Как оформить ДЗ?
