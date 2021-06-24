@@ -1,12 +1,15 @@
-FROM node:alpine
+FROM node
 
-RUN apk add --no-cache --virtual .build-deps-yarn git
+RUN apt-get update && apt-get install git
 
 RUN cd && git clone https://github.com/simplicitesoftware/nodejs-demo.git
 
 WORKDIR /root/nodejs-demo
 
 RUN npm install
+
+ENV VCAP_APP_HOST=0.0.0.0
+ENV VCAP_APP_PORT=3000
 
 EXPOSE 3000
 
