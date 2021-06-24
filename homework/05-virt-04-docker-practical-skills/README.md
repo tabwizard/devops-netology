@@ -236,7 +236,7 @@ ENTRYPOINT ["npm", "start"]
 ```
 
 ```bash
-wizard:~/ $ docker run --rm --name node-js -p 3000:3000 -d tabwizard/node_alpine
+wizard:~/ $ docker run --rm --name node-js -p 3000:3000 -d tabwizard/node
 7a5bd1862088ad8698460d05565cca1d35fc9cbf55b8fc7f9872de6306d8bac6
 wizard:~/ $ docker run --rm --name ubuntu -d ubuntu:latest sleep 3600
 3d70229bce803826dd8dbf5810131e30457a689a0065501f705592d299ebc931
@@ -267,6 +267,7 @@ Keep-Alive: timeout=5
 ```
 
 [![Screenshot_20210624_065946.png](./Screenshot_20210624_065946.png)](./Screenshot_20210624_065946.png)
+
 ---
 
 ### Как оформить ДЗ?
