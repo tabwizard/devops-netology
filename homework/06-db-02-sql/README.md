@@ -264,7 +264,101 @@ Hash Join  (cost=37.00..57.24 rows=810 width=64)
 
 Восстановите БД test_db в новом контейнере.
 
-Приведите список операций, который вы применяли для бэкапа данных и восстановления.
+Приведите список операций, который вы применяли для бэкапа данных и восстановления.  
+
+__ОТВЕТ:__ Сначала с помощью `pg_dump` бэкапим в volume рабочую базу, затем гасим рабочий docker и запускаем пустой без volume базы, но с volume бэкапа. В новом docker с помощью `psql` создаем пустую базу из шаблона и потом с помощью того же `psql` восстанавливаем в неё нашу рабочую базу. Проверяем структуру и данные.  
+P/S/: Можно было backup/restore выполнить с хоста не используя volume для файла с бэкапом, т.к. postgres доступен снаружи, просто хотелось лишний раз поиграть с volumes и docker exec.
+
+```bash
+wizard:~/ $ docker ps
+CONTAINER ID   IMAGE         COMMAND                  CREATED        STATUS        PORTS                                       NAMES
+b66038243c09   postgres:12   "docker-entrypoint.s…"   14 hours ago   Up 14 hours   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp   pgdocker
+
+wizard:~/ $ docker exec -it pgdocker bash
+
+root@b66038243c09:/# pg_dump test_db > /var/lib/postgresql/backup/test_db.backup
+root@b66038243c09:/# exit
+exit
+wizard:~/ $ ll /var/db/postgresql_backup
+итого 8,0K
+-rw-r--r-- 1 root root 4,4K июн 30 08:42 test_db.backup
+wizard:~/ $ docker stop pgdocker
+pgdocker
+wizard:~/ $ sudo docker run --rm --name pgdocker_new -e POSTGRES_PASSWORD=password -e POSTGRES_USER=wizard -e POSTGRES_DB=wizard -d -p 5432:5432 -v /var/db/postgresql_backup:/var/lib/postgresql/backup postgres:12
+b47183d163b09098491677b4df78837ed49f2efaf5bf29c447a104eddc722728
+wizard:~/ $ docker exec -it pgdocker_new bash
+
+root@b47183d163b0:/# psql -Uwizard
+wizard-# \l
+                              List of databases
+   Name    | Owner  | Encoding |  Collate   |   Ctype    | Access privileges
+-----------+--------+----------+------------+------------+-------------------
+ postgres  | wizard | UTF8     | en_US.utf8 | en_US.utf8 |
+ template0 | wizard | UTF8     | en_US.utf8 | en_US.utf8 | =c/wizard        +
+           |        |          |            |            | wizard=CTc/wizard
+ template1 | wizard | UTF8     | en_US.utf8 | en_US.utf8 | =c/wizard        +
+           |        |          |            |            | wizard=CTc/wizard
+ wizard    | wizard | UTF8     | en_US.utf8 | en_US.utf8 |
+(4 rows)
+wizard=# CREATE DATABASE test_db TEMPLATE template0;
+CREATE DATABASE
+wizard=# \l
+                              List of databases
+   Name    | Owner  | Encoding |  Collate   |   Ctype    | Access privileges
+-----------+--------+----------+------------+------------+-------------------
+ postgres  | wizard | UTF8     | en_US.utf8 | en_US.utf8 |
+ template0 | wizard | UTF8     | en_US.utf8 | en_US.utf8 | =c/wizard        +
+           |        |          |            |            | wizard=CTc/wizard
+ template1 | wizard | UTF8     | en_US.utf8 | en_US.utf8 | =c/wizard        +
+           |        |          |            |            | wizard=CTc/wizard
+ test_db   | wizard | UTF8     | en_US.utf8 | en_US.utf8 |
+ wizard    | wizard | UTF8     | en_US.utf8 | en_US.utf8 |
+(5 rows)
+wizard=# \q
+root@b47183d163b0:/# psql -Uwizard test_db < /var/lib/postgresql/backup/test_db.backup
+SET
+SET
+SET
+SET
+SET
+ set_config
+------------
+...
+CREATE TABLE
+ALTER TABLE
+CREATE SEQUENCE
+ALTER TABLE
+ALTER SEQUENCE
+CREATE TABLE
+ALTER TABLE
+CREATE SEQUENCE
+ALTER TABLE
+ALTER SEQUENCE
+ALTER TABLE
+ALTER TABLE
+COPY 5
+COPY 5
+...
+root@b47183d163b0:/# psql -Uwizard test_db
+psql (12.7 (Debian 12.7-1.pgdg100+1))
+Type "help" for help.
+
+test_db=# \dt
+         List of relations
+ Schema |  Name   | Type  | Owner
+--------+---------+-------+--------
+ public | clients | table | wizard
+ public | orders  | table | wizard
+(2 rows)
+
+test_db=# SELECT clients."фамилия" AS "ФИО", orders."наименование" AS "заказ" FROM clients INNER JOIN orders ON clients."заказ" = orders.id;
+         ФИО          |  заказ
+----------------------+---------
+ Иванов Иван Иванович | Книга
+ Петров Петр Петрович | Монитор
+ Иоганн Себастьян Бах | Гитара
+(3 rows)
+```
 
 ---
 
