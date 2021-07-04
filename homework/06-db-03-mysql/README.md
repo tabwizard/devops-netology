@@ -114,6 +114,7 @@ mysql> SELECT * FROM INFORMATION_SCHEMA.USER_ATTRIBUTES WHERE USER = 'test';
 1 row in set (0.00 sec)
 
 ```
+[![Screenshot_20210704_210650.png](./Screenshot_20210704_210650.png)](./Screenshot_20210704_210650.png)
 
 ## Задача 3
 
