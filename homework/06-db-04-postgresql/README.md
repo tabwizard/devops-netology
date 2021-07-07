@@ -212,15 +212,18 @@ __ОТВЕТ:__  Делаем бэкап:
 root@e398ee8a2e9d:/# pg_dump -Uwizard -dtest_database > /var/lib/postgresql/backup/test_database_backup.sql
 ```  
 
-Чтобы добавить уникальность столбца `title` для таблиц `test_database` я бы вставил в бэкап после создания каждой таблицы строку:
+Чтобы добавить уникальность столбца `title` для таблиц `test_database` я бы вставил в бэкап после создания каждой таблицы строку создания индекса и потом подключил их к основному:
 
 ```bash
 ...
-ALTER TABLE public.orders ADD CONSTRAINT title_unique_key UNIQUE (title);
+ALTER TABLE ONLY public.orders ADD CONSTRAINT title_unique_key UNIQUE (title);
 ...
 ALTER TABLE public.orders_1 ADD CONSTRAINT title_unique_key_1 UNIQUE (title);
 ...
 ALTER TABLE public.orders_2 ADD CONSTRAINT title_unique_key_2 UNIQUE (title);
+...
+ALTER INDEX title_unique_key ATTACH PARTITION title_unique_key_1;
+ALTER INDEX title_unique_key ATTACH PARTITION title_unique_key_2;
 ```
 
 ---
