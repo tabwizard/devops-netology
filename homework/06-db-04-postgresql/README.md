@@ -217,10 +217,10 @@ root@e398ee8a2e9d:/# pg_dump -Uwizard -dtest_database > /var/lib/postgresql/back
 ```bash
 ...
 ALTER TABLE ONLY public.orders ADD UNIQUE (title);
-
+...
 ALTER TABLE public.orders_1 ADD UNIQUE (title);
 ALTER INDEX public.orders_title_key ATTACH PARTITION public.orders_1_title_key;
-
+...
 ALTER TABLE public.orders_2 ADD UNIQUE (title);
 ALTER INDEX public.orders_title_key ATTACH PARTITION public.orders_2_title_key; 
 ```
