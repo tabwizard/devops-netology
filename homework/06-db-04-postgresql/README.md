@@ -122,6 +122,8 @@ test_database=# SELECT attname, avg_width FROM pg_stats WHERE tablename = 'order
 __ОТВЕТ:__  
 
 ```bash
+test_database=# begin;
+BEGIN
 test_database=# COPY ( SELECT * FROM orders WHERE price > 499 ) TO '/var/lib/postgresql/orders_1';
 COPY 3
 test_database=# COPY ( SELECT * FROM orders WHERE price <= 499 ) TO '/var/lib/postgresql/orders_2';
@@ -137,11 +139,14 @@ CREATE RULE
 test_database=# CREATE RULE orders_insert_to_2 AS ON INSERT TO orders WHERE (price <= 499) DO INSTEAD INSERT INTO orders_2 VALUES (NEW.*);
 CREATE RULE
 test_database=# GRANT ALL ON orders, orders_1, orders_2 TO postgres;
-
+GRANT
 test_database=# COPY orders_1 FROM '/var/lib/postgresql/orders_1';
 COPY 3
 test_database=# COPY orders_2 FROM '/var/lib/postgresql/orders_2';
 COPY 5
+test_database=# end transaction; 
+COMMIT
+
 test_database=# INSERT INTO orders (title, price) VALUES ('1 insert after sharding', 505);
 INSERT 0 0
 test_database=# INSERT INTO orders (title, price) VALUES ('2 insert after sharding', 101);
