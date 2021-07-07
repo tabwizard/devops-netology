@@ -216,14 +216,13 @@ root@e398ee8a2e9d:/# pg_dump -Uwizard -dtest_database > /var/lib/postgresql/back
 
 ```bash
 ...
-ALTER TABLE ONLY public.orders ADD CONSTRAINT title_unique_key UNIQUE (title);
-...
-ALTER TABLE public.orders_1 ADD CONSTRAINT title_unique_key_1 UNIQUE (title);
-...
-ALTER TABLE public.orders_2 ADD CONSTRAINT title_unique_key_2 UNIQUE (title);
-...
-ALTER INDEX title_unique_key ATTACH PARTITION title_unique_key_1;
-ALTER INDEX title_unique_key ATTACH PARTITION title_unique_key_2;
+ALTER TABLE ONLY public.orders ADD UNIQUE (title);
+
+ALTER TABLE public.orders_1 ADD UNIQUE (title);
+ALTER INDEX public.orders_title_key ATTACH PARTITION public.orders_1_title_key;
+
+ALTER TABLE public.orders_2 ADD UNIQUE (title);
+ALTER INDEX public.orders_title_key ATTACH PARTITION public.orders_2_title_key; 
 ```
 
 ---
