@@ -133,7 +133,7 @@ wizard:06-db-05-elasticsearch/ (main✗) $ curl -XPUT "http://localhost:9200/ind
 wizard:06-db-05-elasticsearch/ (main✗) $ curl -XPUT "http://localhost:9200/ind-3" -H 'Content-Type: application/json' -d'{"settings":{"number_of_shards":4,"number_of_replicas":2}}'
 {"acknowledged":true,"shards_acknowledged":true,"index":"ind-3"}% 
 
-wizard:06-db-05-elasticsearch/ (main✗) $ curl  'localhost:9200/_cat/indices?v'                                               [20:30:40]
+wizard:06-db-05-elasticsearch/ (main✗) $ curl  'localhost:9200/_cat/indices?v'
 health status index                           uuid                   pri rep docs.count docs.deleted store.size pri.store.size
 green  open   .kibana_7.13.3_001              bzmLCi4GTEOYEhu-rgkTHw   1   0         29           13      2.1mb          2.1mb
 green  open   .apm-custom-link                adVjIeL8Rm6iw7ur2HUXUw   1   0          0            0       208b           208b
@@ -240,7 +240,93 @@ ind-3                               0     r      UNASSIGNED
 
 Подсказки:
 
-- возможно вам понадобится доработать `elasticsearch.yml` в части директивы `path.repo` и перезапустить `elasticsearch`
+- возможно вам понадобится доработать `elasticsearch.yml` в части директивы `path.repo` и перезапустить `elasticsearch`  
+
+__ОТВЕТ:__ В `elasticsearch.yml` добавил `path.repo: .`, пересобрал и перезапустил образ
+
+```bash
+wizard:06-db-05-elasticsearch/ (main✗) $ curl -XPUT "http://localhost:9200/_snapshot/netology_backup" -H 'Content-Type: application/json' -d'{"type": "fs","settings": {"location": "snapshots"}}'
+{"acknowledged" : true}
+
+wizard:06-db-05-elasticsearch/ (main✗) $ curl http://localhost:9200/_snapshot |json_pp
+% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+Dload  Upload   Total   Spent    Left  Speed
+100    69  100    69    0     0  20677      0 --:--:-- --:--:-- --:--:-- 23000
+{
+  "netology_backup" : {
+    "settings" : {
+      "location" : "snapshots"
+    },
+    "type" : "fs"
+  }
+}
+
+wizard:06-db-05-elasticsearch/ (main✗) $ curl -XPUT "http://localhost:9200/test" -H 'Content-Type: application/json' -d'{"settings":{"number_of_shards":1,"number_of_replicas":0}}'
+{"acknowledged":true,"shards_acknowledged":true,"index":"test"}%
+
+wizard:06-db-05-elasticsearch/ (main✗) $ curl 'localhost:9200/_cat/indices?v'
+health status index uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+green  open   test  tU9BmmvXRdmw1-63JgKsPA   1   0          0            0       208b           208b
+
+wizard:06-db-05-elasticsearch/ (main✗) $ curl -XPUT "http://localhost:9200/_snapshot/netology_backup/snapshot_elasticsearch?wait_for_completion=true"|json_pp
+% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+Dload  Upload   Total   Spent    Left  Speed
+100   459  100   459    0     0   2882      0 --:--:-- --:--:-- --:--:--  2886
+{
+  "snapshot" : {
+    "data_streams" : [],
+    "duration_in_millis" : 200,
+    "end_time" : "2021-07-09T15:58:26.063Z",
+    "end_time_in_millis" : 1625846306063,
+    "failures" : [],
+    "feature_states" : [],
+    "include_global_state" : true,
+    "indices" : [
+      "test"
+    ],
+    "shards" : {
+      "failed" : 0,
+      "successful" : 1,
+      "total" : 1
+    },
+    "snapshot" : "snapshot_elasticsearch",
+    "start_time" : "2021-07-09T15:58:25.863Z",
+    "start_time_in_millis" : 1625846305863,
+    "state" : "SUCCESS",
+    "uuid" : "p3UbN_caSraJPGBBadewLA",
+    "version" : "7.13.3",
+    "version_id" : 7130399
+  }
+}
+
+wizard:06-db-05-elasticsearch/ (main✗) $ docker exec -it elastic ls -la snapshots
+total 56
+drwxr-xr-x 3 elastic elastic  4096 Jul  9 15:58 .
+drwxr-xr-x 1 elastic root     4096 Jul  9 15:57 ..
+-rw-r--r-- 1 elastic elastic   517 Jul  9 15:58 index-0
+-rw-r--r-- 1 elastic elastic     8 Jul  9 15:58 index.latest
+drwxr-xr-x 3 elastic elastic  4096 Jul  9 15:58 indices
+-rw-r--r-- 1 elastic elastic 25578 Jul  9 15:58 meta-p3UbN_caSraJPGBBadewLA.dat
+-rw-r--r-- 1 elastic elastic   372 Jul  9 15:58 snap-p3UbN_caSraJPGBBadewLA.dat
+
+wizard:06-db-05-elasticsearch/ (main✗) $ curl -XDELETE http://localhost:9200/test
+{"acknowledged":true}%  
+
+wizard:06-db-05-elasticsearch/ (main✗) $ curl -XPUT "http://localhost:9200/test-2" -H 'Content-Type: application/json' -d'{"settings":{"number_of_shards":1,"number_of_replicas":0}}'
+{"acknowledged":true,"shards_acknowledged":true,"index":"test-2"}%
+
+wizard:06-db-05-elasticsearch/ (main✗) $ curl 'localhost:9200/_cat/indices?v'
+health status index  uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+green  open   test-2 AWLxYrSTSLOA6u56P3e22g   1   0          0            0       208b           208b
+
+wizard:06-db-05-elasticsearch/ (main✗) $ curl -XPOST "http://localhost:9200/_snapshot/netology_backup/snapshot_elasticsearch/_restore"
+{"accepted":true}%
+
+wizard:06-db-05-elasticsearch/ (06-db-05-elasticsearch✗) $ curl 'localhost:9200/_cat/indices?v'
+health status index  uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+green  open   test-2 AWLxYrSTSLOA6u56P3e22g   1   0          0            0       208b           208b
+green  open   test   LE3T4a-rQ6y9wvYv-xxNxA   1   0          0            0       208b           208b
+```
 
 ---
 

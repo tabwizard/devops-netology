@@ -7,7 +7,7 @@ RUN cd /usr/share; \
     rm elasticsearch-7.13.3-linux-x86_64.tar.gz; \
     adduser elastic; \
     chown elastic -R /usr/share/elasticsearch-7.13.3;\
-	  mkdir /var/lib/nodes; \
+    mkdir /var/lib/nodes; \
     chown elastic -R /var/lib/nodes
 WORKDIR /usr/share/elasticsearch-7.13.3
 COPY elasticsearch.yml ./config/
