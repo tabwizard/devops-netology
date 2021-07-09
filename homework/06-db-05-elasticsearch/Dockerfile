@@ -1,8 +1,8 @@
 FROM centos:7
-RUN yum update -y && yum install -y wget tar; \
+RUN yum update -y -q -e 0 && yum install -y -q -e 0 wget tar; \
     yum clean all && rm -rf /var/cache/yum
 RUN cd /usr/share; \
-    wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.13.3-linux-x86_64.tar.gz; \
+    wget -q https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.13.3-linux-x86_64.tar.gz; \
     tar -xzf elasticsearch-7.13.3-linux-x86_64.tar.gz; \
     rm elasticsearch-7.13.3-linux-x86_64.tar.gz; \
     adduser elastic; \
