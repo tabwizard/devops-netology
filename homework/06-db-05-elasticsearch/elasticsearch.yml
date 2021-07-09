@@ -1,0 +1,6 @@
+path.data: /var/lib
+cluster.name: netology
+node.name: ${HOSTNAME}
+network.host: 0.0.0.0
+discovery.type: single-node
+action.auto_create_index: .monitoring*,.watches,.triggered_watches,.watcher-history*,.ml*
