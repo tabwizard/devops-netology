@@ -3,5 +3,6 @@
 .gitignore
 */.vscode/*
 */.vscode
-*/.terraform*
-*/terraform.tfstate*
+.terraform*
+terraform.tfstate*
+terraform-provider*
