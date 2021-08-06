@@ -6,3 +6,5 @@
 .terraform*
 terraform.tfstate*
 terraform-provider*
+terraform
+terraform/*
