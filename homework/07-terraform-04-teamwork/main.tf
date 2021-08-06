@@ -51,14 +51,14 @@ module "ec2-instance" {
   source                      = "terraform-aws-modules/ec2-instance/aws"
   version                     = "~> 2.0"
 
-  name                        = "wizard_aws_modules_ec2_instance"
-  instance_count              = length(local.web_instance_count[terraform.workspace])
+  name                        = "wizard_aws_modules_ec2_instance_${count.index + 1}"
+  count                       = length(local.web_instance_count[terraform.workspace])
   ami                         = data.aws_ami.ubuntu_server.id
   instance_type               = local.web_instance_type[terraform.workspace]
   vpc_security_group_ids      = [module.vpc.default_security_group_id]
   subnet_id                   = module.vpc.public_subnets[0]
   tags = {
-    Name = "Wizard's Server"
+    Name = "Wizard's Server ${count.index + 1}"
   }
 }
 
@@ -66,12 +66,12 @@ module "ec2-instance2" {
   source                      = "terraform-aws-modules/ec2-instance/aws"
   version                     = "~> 2.0"
   for_each = toset(local.web_instance_count[terraform.workspace])
-    name                        = "wizard_aws_modules_ec2_instance_for_each"
+    name                        = "wizard_aws_modules_ec2_instance_for_each_${each.value}"
     ami                         = data.aws_ami.ubuntu_server.id
     instance_type               = local.web_instance_type[terraform.workspace]
     vpc_security_group_ids      = [module.vpc.default_security_group_id]
     subnet_id                   = module.vpc.public_subnets[0]
     tags = {
-        Name = "Wizard's Server  ${each.value}"
+        Name = "Wizard's Server ${each.value}"
     }
 }
