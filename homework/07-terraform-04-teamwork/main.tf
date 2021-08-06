@@ -3,14 +3,6 @@ provider "aws" {
 }
 
 terraform {
-  backend "s3" {
-    bucket = "wizards-bucket-tfstate"
-    key    = "terraform.tfstate"
-    region = "us-west-2"
-  }
-}
-
-terraform {
   required_providers {
     aws = {
       source = "hashicorp/aws"
@@ -75,7 +67,6 @@ module "ec2-instance2" {
   version                     = "~> 2.0"
   for_each = toset(local.web_instance_count[terraform.workspace])
     name                        = "wizard_aws_modules_ec2_instance_for_each"
-    instance_count              = length(local.web_instance_count[terraform.workspace])
     ami                         = data.aws_ami.ubuntu_server.id
     instance_type               = local.web_instance_type[terraform.workspace]
     vpc_security_group_ids      = [module.vpc.default_security_group_id]
