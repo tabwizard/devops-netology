@@ -1,11 +1,19 @@
 provider "aws" {
- region = "us-west-2"
+  region = "us-west-2"
+}
+
+terraform {
+  backend "s3" {
+    bucket = "wizards-bucket-tfstate"
+    key    = "terraform.tfstate"
+    region = "us-west-2"
+  }
 }
 
 terraform {
   required_providers {
     aws = {
-      source = "hashicorp/aws"
+      source  = "hashicorp/aws"
       version = "~> 3.0"
     }
   }
@@ -14,18 +22,18 @@ terraform {
 locals {
   web_instance_type = {
     stage = "t2.micro"
-    prod = "t3.large"
+    prod  = "t3.large"
   }
   web_instance_count = {
     stage = ["1"]
-    prod = ["1", "2"]
+    prod  = ["1", "2"]
   }
 }
 
 
 data "aws_ami" "ubuntu_server" {
-  most_recent      = true
-  owners           = ["099720109477"]
+  most_recent = true
+  owners      = ["099720109477"]
 
   filter {
     name   = "name"
@@ -48,30 +56,31 @@ module "vpc" {
 }
 
 module "ec2-instance" {
-  source                      = "terraform-aws-modules/ec2-instance/aws"
-  version                     = "~> 2.0"
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version = "~> 2.0"
 
-  name                        = "wizard_aws_modules_ec2_instance_${count.index + 1}"
-  count                       = length(local.web_instance_count[terraform.workspace])
-  ami                         = data.aws_ami.ubuntu_server.id
-  instance_type               = local.web_instance_type[terraform.workspace]
-  vpc_security_group_ids      = [module.vpc.default_security_group_id]
-  subnet_id                   = module.vpc.public_subnets[0]
+  name                   = "wizard_aws_modules_ec2_instance_${count.index + 1}"
+  count                  = length(local.web_instance_count[terraform.workspace])
+  ami                    = data.aws_ami.ubuntu_server.id
+  instance_type          = local.web_instance_type[terraform.workspace]
+  vpc_security_group_ids = [module.vpc.default_security_group_id]
+  subnet_id              = module.vpc.public_subnets[0]
   tags = {
     Name = "Wizard's Server ${count.index + 1}"
   }
 }
 
 module "ec2-instance2" {
-  source                      = "terraform-aws-modules/ec2-instance/aws"
-  version                     = "~> 2.0"
-  for_each = toset(local.web_instance_count[terraform.workspace])
-    name                        = "wizard_aws_modules_ec2_instance_for_each_${each.value}"
-    ami                         = data.aws_ami.ubuntu_server.id
-    instance_type               = local.web_instance_type[terraform.workspace]
-    vpc_security_group_ids      = [module.vpc.default_security_group_id]
-    subnet_id                   = module.vpc.public_subnets[0]
-    tags = {
-        Name = "Wizard's Server ${each.value}"
-    }
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version = "~> 2.0"
+
+  for_each               = toset(local.web_instance_count[terraform.workspace])
+  name                   = "wizard_aws_modules_ec2_instance_for_each_${each.value}"
+  ami                    = data.aws_ami.ubuntu_server.id
+  instance_type          = local.web_instance_type[terraform.workspace]
+  vpc_security_group_ids = [module.vpc.default_security_group_id]
+  subnet_id              = module.vpc.public_subnets[0]
+  tags = {
+    Name = "Wizard's Server ${each.value}"
+  }
 }
