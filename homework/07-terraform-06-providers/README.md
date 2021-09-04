@@ -23,7 +23,7 @@
 **ОТВЕТ:**  
 
 1. В [terraform-provider-aws/aws/provider.go](https://github.com/hashicorp/terraform-provider-aws/blob/d6f99829ec3f16b93ed7537660a68afec6c4b29c/aws/provider.go#L186-L1230) перечислены все доступные `resource` и `data_source`.
-1. параметр `name`в ресурсе `aws_sqs_queue`  
+1. параметр `name` в ресурсе `aws_sqs_queue`  
     * конфликтует с `name_prefix` - `ConflictsWith: []string{"name_prefix"},` [ссылка](https://github.com/hashicorp/terraform-provider-aws/blob/d6f99829ec3f16b93ed7537660a68afec6c4b29c/aws/resource_aws_sqs_queue.go#L99)  
     * Максимальная длина `name` - 80 символов
     * Имя должно подчиняться одному из 2-х регулярных выражений: `^[a-zA-Z0-9_-]{1,80}$` в общем случае, или `^[a-zA-Z0-9_-]{1,75}\.fifo$` если `fifoQueue` ([ссылка](https://github.com/hashicorp/terraform-provider-aws/blob/d6f99829ec3f16b93ed7537660a68afec6c4b29c/aws/resource_aws_sqs_queue.go#L412-L420))
