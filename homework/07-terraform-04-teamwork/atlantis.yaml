@@ -1,0 +1,21 @@
+version: 3
+projects:
+- dir: stage
+  workflow: my_custom
+  autoplan:
+    when_modified: ["../modules/**/*.tf", "*.tf*"]
+- dir: prod
+  workflow: my_custom
+  autoplan:
+    when_modified: ["../modules/**/*.tf", "*.tf*"]
+
+workflows:
+  my_custom:
+    plan:
+      steps:
+      - run: terraform init -input=false -no-color
+      - plan:
+          extra_args: ["-lock=false"]
+    apply:
+      steps:
+      - apply

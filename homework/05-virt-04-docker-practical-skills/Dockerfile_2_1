@@ -1,0 +1,20 @@
+FROM amazoncorretto
+
+RUN yum update –y && yum install -y wget initscripts ; yum clean all
+
+RUN wget -O /etc/yum.repos.d/jenkins.repo \
+    https://pkg.jenkins.io/redhat-stable/jenkins.repo
+    
+RUN rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+
+RUN yum upgrade
+
+RUN yum install jenkins java-1.8.0-openjdk-devel -y; yum clean all
+
+COPY start_jenkins.sh /usr/bin/start_jenkins.sh
+
+RUN chmod +x /usr/bin/start_jenkins.sh
+
+EXPOSE 8080
+
+ENTRYPOINT ["/usr/bin/start_jenkins.sh"]
