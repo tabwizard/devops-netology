@@ -1,8 +1,10 @@
 .idea
 .directory
 .gitignore
-*/.vscode/*
-*/.vscode
+**/.vscode/*
+**/.vscode
+**/.vagrant/*
+**/.vagrant
 .terraform*
 terraform.tfstate*
 terraform-provider*
