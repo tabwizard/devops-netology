@@ -1,6 +1,0 @@
-path.data: /var/lib
-path.repo: .
-cluster.name: netology
-node.name: ${HOSTNAME}
-network.host: 0.0.0.0
-discovery.type: single-node

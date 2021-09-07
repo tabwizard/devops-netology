@@ -1,6 +1,0 @@
-FROM archlinux:latest
-
-RUN pacman -Sy --noconfirm ponysay
-
-ENTRYPOINT ["/usr/bin/ponysay"]
-CMD ["Hey, netology”]
