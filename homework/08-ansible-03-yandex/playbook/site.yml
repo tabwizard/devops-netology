@@ -4,9 +4,10 @@
   handlers:
     - name: restart Elasticsearch
       become: true
-      service:
+      systemd:
         name: elasticsearch
         state: restarted
+        enabled: true
   tasks:
     - name: "Download Elasticsearch's rpm"
       get_url:
@@ -19,11 +20,13 @@
       yum:
         name: "/tmp/elasticsearch-{{ elk_stack_version }}-x86_64.rpm"
         state: present
+      notify: restart Elasticsearch
     - name: Configure Elasticsearch
       become: true
       template:
         src: elasticsearch.yml.j2
         dest: /etc/elasticsearch/elasticsearch.yml
+        mode: 0640
       notify: restart Elasticsearch
 
 - name: Install Kibana
@@ -31,9 +34,10 @@
   handlers:
     - name: restart Kibana
       become: true
-      service:
+      systemd:
         name: kibana
         state: restarted
+        enabled: true
   tasks:
     - name: "Download Kibana's rpm"
       get_url:
@@ -46,11 +50,13 @@
       yum:
         name: "/tmp/kibana-{{ elk_stack_version }}-x86_64.rpm"
         state: present
+      notify: restart Kibana
     - name: Configure Kibana
       become: true
       template:
         src: kibana.yml.j2
         dest: /etc/kibana/kibana.yml
+        mode: 0640
       notify: restart Kibana
 
 - name: Install Filebeat
@@ -58,9 +64,10 @@
   handlers:
     - name: restart Filebeat
       become: true
-      service:
+      systemd:
         name: filebeat
         state: restarted
+        enabled: true
   tasks:
     - name: "Download Filebeat's rpm"
       get_url:
@@ -73,9 +80,27 @@
       yum:
         name: "/tmp/filebeat-{{ elk_stack_version }}-x86_64.rpm"
         state: present
+      notify: restart Filebeat
     - name: Configure Filebeat
       become: true
       template:
         src: filebeat.yml.j2
         dest: /etc/filebeat/filebeat.yml
+        mode: 0640
       notify: restart Filebeat
+    - name: Set filebeat systemwork
+      become: true
+      command:
+        cmd: filebeat modules enable system
+        chdir: /usr/share/filebeat/bin
+      register: filebeat_modules
+      changed_when: filebeat_modules.stdout != 'Module system is already enabled'
+    - name: Load Kibana dashboard
+      become: true
+      command:
+        cmd: filebeat setup
+        chdir: /usr/share/filebeat/bin
+      register: filebeat_setup
+      until: filebeat_setup is succeeded
+      notify: restart Filebeat
+      changed_when: false

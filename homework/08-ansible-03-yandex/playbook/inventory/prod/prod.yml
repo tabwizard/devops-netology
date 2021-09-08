@@ -4,9 +4,9 @@ all:
     el-instance:
       ansible_host: 178.154.193.149
     k-instance:
-      ansible_host: 178.154.195.121
+      ansible_host: 178.154.197.120
     app-instance:
-      ansible_host: 178.154.193.31
+      ansible_host: 84.252.143.138
   vars:
     ansible_connection: ssh
     ansible_port: 22
