@@ -10,3 +10,5 @@ terraform.tfstate*
 terraform-provider*
 terraform
 terraform/*
+roles
+roles/*
