@@ -2,11 +2,11 @@
 all:
   hosts:
     el-instance:
-      ansible_host: 84.252.139.196
-    k-instance:
-      ansible_host: 84.252.142.206
-    app-instance:
-      ansible_host: 84.252.138.162
+      ansible_host: 178.154.195.77
+    kbn-instance:
+      ansible_host: 178.154.195.127
+    flb-instance:
+      ansible_host: 178.154.195.69
   vars:
     ansible_connection: ssh
     ansible_port: 22
@@ -16,7 +16,7 @@ elasticsearch:
     el-instance:
 kibana:
   hosts:
-    k-instance:
-application:
+    kbn-instance:
+filebeat:
   hosts:
-    app-instance:
+    flb-instance:
