@@ -1,12 +1,3 @@
-terraform {
-  required_providers {
-    yandex = {
-      source  = "yandex-cloud/yandex"
-      version = "0.61.0"
-    }
-  }
-}
-
 provider "yandex" {
   token     = "AQAAAAAgZ5SAAATuwepD3czPO0Tcig5UC6l-26Q"
   cloud_id  = "b1gqrp1i6qksiv3fsd7p"
@@ -127,36 +118,4 @@ resource "yandex_vpc_subnet" "wizsubnet-1" {
   zone           = "ru-central1-b"
   network_id     = yandex_vpc_network.wizard-network-1.id
   v4_cidr_blocks = ["192.168.10.0/24"]
-}
-
-output "internal_ip_address_el-1-centos7" {
-  value = yandex_compute_instance.el-1-centos7.network_interface.0.ip_address
-}
-
-output "internal_ip_address_el-2-ubuntu-2004-lts" {
-  value = yandex_compute_instance.el-2-ubuntu-2004-lts.network_interface.0.ip_address
-}
-
-output "internal_ip_address_kbn-1-centos7" {
-  value = yandex_compute_instance.kbn-1-centos7.network_interface.0.ip_address
-}
-
-output "internal_ip_address_flb-1-ubuntu-2004-lts" {
-  value = yandex_compute_instance.flb-1-ubuntu-2004-lts.network_interface.0.ip_address
-}
-
-output "external_ip_address_el-1-centos7" {
-  value = yandex_compute_instance.el-1-centos7.network_interface.0.nat_ip_address
-}
-
-output "external_ip_address_el-2-ubuntu-2004-lts" {
-  value = yandex_compute_instance.el-2-ubuntu-2004-lts.network_interface.0.nat_ip_address
-}
-
-output "external_ip_address_kbn-1-centos7" {
-  value = yandex_compute_instance.kbn-1-centos7.network_interface.0.nat_ip_address
-}
-
-output "external_ip_address_flb-1-ubuntu-2004-lts" {
-  value = yandex_compute_instance.flb-1-ubuntu-2004-lts.network_interface.0.nat_ip_address
 }

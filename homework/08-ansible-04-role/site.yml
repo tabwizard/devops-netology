@@ -1,0 +1,15 @@
+---
+- name: Install Elasticsearch
+  hosts: elasticsearch
+  role:
+    - elastic
+
+- name: Install Kibana
+  hosts: kibana
+  role: 
+    - { role: kibana-role }
+
+- name: Install Filebeat
+  hosts: application
+  role: 
+    - { role: filebeat-role }
