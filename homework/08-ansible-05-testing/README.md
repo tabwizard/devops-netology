@@ -793,7 +793,1086 @@
   cannot clone: Operation not permitted
   Error: cannot re-exec process
   ```
-  В итоге дополнительные сценарии для molecule создал, фалы `tox.ini` и `test-requirements.txt` подготовил, tox проверить не смог как, собственно, и преподаватель на лекции, хотя там ошибки были другие.
+  Было принято решение запускать `tox` не внутри контейнера, а на рабочей машине. Установил на рабочую машину python 3.6 и 3.9.
+  Тесты tox-a решил запускать в docker-e, поэтому в `test-requirements.txt` и `molecule.yml` podman заменил на docker и поставил на рабочую машину `ansible-galaxy collection install community.docker`. В ходе экспериментов выяснилось, что ansible 2.8 не умеет конструкции типа `elastic_instance: "{{ "hostvars['el-instance']['ansible_facts']['default_ipv4']['address'] | default('0.0.0.0') }}"` пришлось заменить на `elastic_instance: 0.0.0.0`
+
+  <details>
+  <summary>Запустил tox в каталоге kibana-role: (развернуть)</summary>
+
+  ```bash
+  wizard:kibana-role/ (master✗) $ tox
+  py36-ansible28 installed: ansible==2.8.20,ansible-lint==5.1.3,arrow==1.1.1,bcrypt==3.2.0,binaryornot==0.4.4,bracex==2.1.1,Cerberus==1.3.2,certifi==2021.5.30,cffi==1.14.6,chardet==4.0.0,charset-normalizer==2.0.5,click==8.0.1,click-help-colors==0.9.1,colorama==0.4.4,commonmark==0.9.1,cookiecutter==1.7.3,cryptography==3.4.8,dataclasses==0.8,distro==1.6.0,docker==5.0.2,enrich==1.2.6,idna==3.2,importlib-metadata==4.8.1,Jinja2==3.0.1,jinja2-time==0.2.0,MarkupSafe==2.0.1,molecule==3.4.0,molecule-docker==0.2.4,packaging==21.0,paramiko==2.7.2,pathspec==0.9.0,pluggy==0.13.1,poyo==0.5.0,pycparser==2.20,Pygments==2.10.0,PyNaCl==1.4.0,pyparsing==2.4.7,python-dateutil==2.8.2,python-slugify==5.0.2,PyYAML==5.4.1,requests==2.26.0,rich==10.9.0,ruamel.yaml==0.17.16,ruamel.yaml.clib==0.2.6,selinux==0.2.1,six==1.16.0,subprocess-tee==0.3.4,tenacity==8.0.1,text-unidecode==1.3,typing-extensions==3.10.0.2,urllib3==1.26.6,wcmatch==8.2,websocket-client==1.2.1,yamllint==1.26.3,zipp==3.5.0
+  py36-ansible28 run-test-pre: PYTHONHASHSEED='2989693706'
+  py36-ansible28 run-test: commands[0] | molecule test -s alternative --destroy=always
+  INFO     alternative scenario test matrix: destroy, create, converge, destroy
+  INFO     Performing prerun...
+  INFO     Guessed /home/wizard/Dropbox/Разное/Netology/kibana-role as project root directory
+  WARNING  Computed fully qualified role name of kibana_role does not follow current galaxy requirements.
+  Please edit meta/main.yml and assure we can correctly determine full role name:
+
+  galaxy_info:
+  role_name: my_name  # if absent directory name hosting role is used instead
+  namespace: my_galaxy_namespace  # if absent, author is used instead
+
+  Namespace: https://galaxy.ansible.com/docs/contributing/namespaces.html#galaxy-namespace-limitations
+  Role: https://galaxy.ansible.com/docs/contributing/creating_role.html#role-names
+
+  As an alternative, you can add 'role-name' to either skip_list or warn_list.
+
+  INFO     Using /home/wizard/.cache/ansible-lint/1301d8/roles/kibana_role symlink to current repository in order to enable Ansible to find the role using its expected full name.
+  INFO     Added ANSIBLE_ROLES_PATH=~/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:/home/wizard/.cache/ansible-lint/1301d8/roles
+  INFO     Running alternative > destroy
+  INFO     Sanity checks: 'docker'
+
+  PLAY [Destroy] *****************************************************************************************************************************************
+
+  TASK [Destroy molecule instance(s)] ********************************************************************************************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) deletion to complete] *******************************************************************************************************
+  FAILED - RETRYING: Wait for instance(s) deletion to complete (300 retries left).
+  ok: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '315057706579.263541', 'results_file': '/home/wizard/.ansible_async/315057706579.263541', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True}, 'ansible_loop_var': 'item'})
+
+  TASK [Delete docker network(s)] ************************************************************************************************************************
+
+  PLAY RECAP *********************************************************************************************************************************************
+  localhost                  : ok=2    changed=1    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+
+  INFO     Running alternative > create
+
+  PLAY [Create] ******************************************************************************************************************************************
+
+  TASK [Log into a Docker registry] **********************************************************************************************************************
+  skipping: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True})
+
+  TASK [Check presence of custom Dockerfiles] ************************************************************************************************************
+  ok: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True})
+
+  TASK [Create Dockerfiles from image names] *************************************************************************************************************
+  skipping: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True})
+
+  TASK [Discover local Docker images] ********************************************************************************************************************
+  ok: [localhost] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True}, 'ansible_loop_var': 'item', 'i': 0, 'ansible_index_var': 'i'})
+
+  TASK [Build an Ansible compatible image (new)] *********************************************************************************************************
+  skipping: [localhost] => (item=molecule_local/docker.io/pycontribs/centos:7)
+
+  TASK [Create docker network(s)] ************************************************************************************************************************
+
+  TASK [Determine the CMD directives] ********************************************************************************************************************
+  ok: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True})
+
+  TASK [Create molecule instance(s)] *********************************************************************************************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) creation to complete] *******************************************************************************************************
+  FAILED - RETRYING: Wait for instance(s) creation to complete (300 retries left).
+  changed: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '510890314492.263684', 'results_file': '/home/wizard/.ansible_async/510890314492.263684', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True}, 'ansible_loop_var': 'item'})
+
+  PLAY RECAP *********************************************************************************************************************************************
+  localhost                  : ok=5    changed=2    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0
+
+  INFO     Running alternative > converge
+
+  PLAY [Converge] ****************************************************************************************************************************************
+
+  TASK [Gathering Facts] *********************************************************************************************************************************
+  ok: [centos7]
+
+  TASK [Include kibana-role] *****************************************************************************************************************************
+
+  TASK [kibana-role : Fail if unsupported system detected] ***********************************************************************************************
+  skipping: [centos7]
+
+  TASK [kibana-role : Create directory to download] ******************************************************************************************************
+  ok: [centos7 -> localhost]
+
+  TASK [kibana-role : include_tasks] *********************************************************************************************************************
+  included: /home/wizard/Dropbox/Разное/Netology/kibana-role/tasks/download_yum.yml for centos7
+
+  TASK [kibana-role : Download Kibana's rpm] *************************************************************************************************************
+  ok: [centos7 -> localhost]
+
+  TASK [kibana-role : Copy Kibana to managed node] *******************************************************************************************************
+  changed: [centos7]
+
+  TASK [kibana-role : include_tasks] *********************************************************************************************************************
+  included: /home/wizard/Dropbox/Разное/Netology/kibana-role/tasks/install_yum.yml for centos7
+
+  TASK [kibana-role : Install Kibana] ********************************************************************************************************************
+  changed: [centos7]
+
+  TASK [kibana-role : Configure Kibana] ******************************************************************************************************************
+  changed: [centos7]
+
+  RUNNING HANDLER [kibana-role : restart Kibana] *********************************************************************************************************
+  skipping: [centos7]
+
+  PLAY RECAP *********************************************************************************************************************************************
+  centos7                    : ok=8    changed=3    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0
+
+  INFO     Running alternative > destroy
+
+  PLAY [Destroy] *****************************************************************************************************************************************
+
+  TASK [Destroy molecule instance(s)] ********************************************************************************************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) deletion to complete] *******************************************************************************************************
+  FAILED - RETRYING: Wait for instance(s) deletion to complete (300 retries left).
+  changed: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '695312052839.265137', 'results_file': '/home/wizard/.ansible_async/695312052839.265137', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True}, 'ansible_loop_var': 'item'})
+
+  TASK [Delete docker network(s)] ************************************************************************************************************************
+
+  PLAY RECAP *********************************************************************************************************************************************
+  localhost                  : ok=2    changed=2    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+
+  INFO     Pruning extra files from scenario ephemeral directory
+  py36-ansible30 installed: ansible==3.0.0,ansible-base==2.10.14,ansible-lint==5.1.3,arrow==1.1.1,bcrypt==3.2.0,binaryornot==0.4.4,bracex==2.1.1,Cerberus==1.3.2,certifi==2021.5.30,cffi==1.14.6,chardet==4.0.0,charset-normalizer==2.0.5,click==8.0.1,click-help-colors==0.9.1,colorama==0.4.4,commonmark==0.9.1,cookiecutter==1.7.3,cryptography==3.4.8,dataclasses==0.8,distro==1.6.0,docker==5.0.2,enrich==1.2.6,idna==3.2,importlib-metadata==4.8.1,Jinja2==3.0.1,jinja2-time==0.2.0,MarkupSafe==2.0.1,molecule==3.4.0,molecule-docker==0.2.4,packaging==21.0,paramiko==2.7.2,pathspec==0.9.0,pluggy==0.13.1,poyo==0.5.0,pycparser==2.20,Pygments==2.10.0,PyNaCl==1.4.0,pyparsing==2.4.7,python-dateutil==2.8.2,python-slugify==5.0.2,PyYAML==5.4.1,requests==2.26.0,rich==10.9.0,ruamel.yaml==0.17.16,ruamel.yaml.clib==0.2.6,selinux==0.2.1,six==1.16.0,subprocess-tee==0.3.4,tenacity==8.0.1,text-unidecode==1.3,typing-extensions==3.10.0.2,urllib3==1.26.6,wcmatch==8.2,websocket-client==1.2.1,yamllint==1.26.3,zipp==3.5.0
+  py36-ansible30 run-test-pre: PYTHONHASHSEED='2989693706'
+  py36-ansible30 run-test: commands[0] | molecule test -s alternative --destroy=always
+  INFO     alternative scenario test matrix: destroy, create, converge, destroy
+  INFO     Performing prerun...
+  INFO     Guessed /home/wizard/Dropbox/Разное/Netology/kibana-role as project root directory
+  WARNING  Computed fully qualified role name of kibana_role does not follow current galaxy requirements.
+  Please edit meta/main.yml and assure we can correctly determine full role name:
+
+  galaxy_info:
+  role_name: my_name  # if absent directory name hosting role is used instead
+  namespace: my_galaxy_namespace  # if absent, author is used instead
+
+  Namespace: https://galaxy.ansible.com/docs/contributing/namespaces.html#galaxy-namespace-limitations
+  Role: https://galaxy.ansible.com/docs/contributing/creating_role.html#role-names
+
+  As an alternative, you can add 'role-name' to either skip_list or warn_list.
+
+  INFO     Using /home/wizard/.cache/ansible-lint/1301d8/roles/kibana_role symlink to current repository in order to enable Ansible to find the role using its expected full name.
+  INFO     Added ANSIBLE_ROLES_PATH=~/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:/home/wizard/.cache/ansible-lint/1301d8/roles
+  INFO     Running alternative > destroy
+  INFO     Sanity checks: 'docker'
+
+  PLAY [Destroy] *****************************************************************
+
+  TASK [Destroy molecule instance(s)] ********************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) deletion to complete] *******************************
+  FAILED - RETRYING: Wait for instance(s) deletion to complete (300 retries left).
+  ok: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '933810813079.265272', 'results_file': '/home/wizard/.ansible_async/933810813079.265272', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True}, 'ansible_loop_var': 'item'})
+
+  TASK [Delete docker network(s)] ************************************************
+
+  PLAY RECAP *********************************************************************
+  localhost                  : ok=2    changed=1    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+
+  INFO     Running alternative > create
+
+  PLAY [Create] ******************************************************************
+
+  TASK [Log into a Docker registry] **********************************************
+  skipping: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True})
+
+  TASK [Check presence of custom Dockerfiles] ************************************
+  ok: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True})
+
+  TASK [Create Dockerfiles from image names] *************************************
+  skipping: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True})
+
+  TASK [Discover local Docker images] ********************************************
+  ok: [localhost] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True}, 'ansible_loop_var': 'item', 'i': 0, 'ansible_index_var': 'i'})
+
+  TASK [Build an Ansible compatible image (new)] *********************************
+  skipping: [localhost] => (item=molecule_local/docker.io/pycontribs/centos:7)
+
+  TASK [Create docker network(s)] ************************************************
+
+  TASK [Determine the CMD directives] ********************************************
+  ok: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True})
+
+  TASK [Create molecule instance(s)] *********************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) creation to complete] *******************************
+  FAILED - RETRYING: Wait for instance(s) creation to complete (300 retries left).
+  changed: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '998210771336.265432', 'results_file': '/home/wizard/.ansible_async/998210771336.265432', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True}, 'ansible_loop_var': 'item'})
+
+  PLAY RECAP *********************************************************************
+  localhost                  : ok=5    changed=2    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0
+
+  INFO     Running alternative > converge
+
+  PLAY [Converge] ****************************************************************
+
+  TASK [Gathering Facts] *********************************************************
+  ok: [centos7]
+
+  TASK [Include kibana-role] *****************************************************
+
+  TASK [kibana-role : Fail if unsupported system detected] ***********************
+  skipping: [centos7]
+
+  TASK [kibana-role : Create directory to download] ******************************
+  ok: [centos7 -> localhost]
+
+  TASK [kibana-role : include_tasks] *********************************************
+  included: /home/wizard/Dropbox/Разное/Netology/kibana-role/tasks/download_yum.yml for centos7
+
+  TASK [kibana-role : Download Kibana's rpm] *************************************
+  ok: [centos7 -> localhost]
+
+  TASK [kibana-role : Copy Kibana to managed node] *******************************
+  changed: [centos7]
+
+  TASK [kibana-role : include_tasks] *********************************************
+  included: /home/wizard/Dropbox/Разное/Netology/kibana-role/tasks/install_yum.yml for centos7
+
+  TASK [kibana-role : Install Kibana] ********************************************
+  changed: [centos7]
+
+  TASK [kibana-role : Configure Kibana] ******************************************
+  changed: [centos7]
+
+  RUNNING HANDLER [kibana-role : restart Kibana] *********************************
+  skipping: [centos7]
+
+  PLAY RECAP *********************************************************************
+  centos7                    : ok=8    changed=3    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0
+
+  INFO     Running alternative > destroy
+
+  PLAY [Destroy] *****************************************************************
+
+  TASK [Destroy molecule instance(s)] ********************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) deletion to complete] *******************************
+  FAILED - RETRYING: Wait for instance(s) deletion to complete (300 retries left).
+  changed: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '427969583546.266916', 'results_file': '/home/wizard/.ansible_async/427969583546.266916', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True}, 'ansible_loop_var': 'item'})
+
+  TASK [Delete docker network(s)] ************************************************
+
+  PLAY RECAP *********************************************************************
+  localhost                  : ok=2    changed=2    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+
+  INFO     Pruning extra files from scenario ephemeral directory
+  py39-ansible28 installed: ansible==2.8.20,ansible-lint==5.1.3,arrow==1.1.1,bcrypt==3.2.0,binaryornot==0.4.4,bracex==2.1.1,Cerberus==1.3.2,certifi==2021.5.30,cffi==1.14.6,chardet==4.0.0,charset-normalizer==2.0.5,click==8.0.1,click-help-colors==0.9.1,colorama==0.4.4,commonmark==0.9.1,cookiecutter==1.7.3,cryptography==3.4.8,distro==1.6.0,docker==5.0.2,enrich==1.2.6,idna==3.2,Jinja2==3.0.1,jinja2-time==0.2.0,MarkupSafe==2.0.1,molecule==3.4.0,molecule-docker==0.2.4,packaging==21.0,paramiko==2.7.2,pathspec==0.9.0,pluggy==0.13.1,poyo==0.5.0,pycparser==2.20,Pygments==2.10.0,PyNaCl==1.4.0,pyparsing==2.4.7,python-dateutil==2.8.2,python-slugify==5.0.2,PyYAML==5.4.1,requests==2.26.0,rich==10.9.0,ruamel.yaml==0.17.16,ruamel.yaml.clib==0.2.6,selinux==0.2.1,six==1.16.0,subprocess-tee==0.3.4,tenacity==8.0.1,text-unidecode==1.3,urllib3==1.26.6,wcmatch==8.2,websocket-client==1.2.1,yamllint==1.26.3
+  py39-ansible28 run-test-pre: PYTHONHASHSEED='2989693706'
+  py39-ansible28 run-test: commands[0] | molecule test -s alternative --destroy=always
+  INFO     alternative scenario test matrix: destroy, create, converge, destroy
+  INFO     Performing prerun...
+  INFO     Guessed /home/wizard/Dropbox/Разное/Netology/kibana-role as project root directory
+  WARNING  Computed fully qualified role name of kibana_role does not follow current galaxy requirements.
+  Please edit meta/main.yml and assure we can correctly determine full role name:
+
+  galaxy_info:
+  role_name: my_name  # if absent directory name hosting role is used instead
+  namespace: my_galaxy_namespace  # if absent, author is used instead
+
+  Namespace: https://galaxy.ansible.com/docs/contributing/namespaces.html#galaxy-namespace-limitations
+  Role: https://galaxy.ansible.com/docs/contributing/creating_role.html#role-names
+
+  As an alternative, you can add 'role-name' to either skip_list or warn_list.
+
+  INFO     Using /home/wizard/.cache/ansible-lint/1301d8/roles/kibana_role symlink to current repository in order to enable Ansible to find the role using its expected full name.
+  INFO     Added ANSIBLE_ROLES_PATH=~/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:/home/wizard/.cache/ansible-lint/1301d8/roles
+  INFO     Running alternative > destroy
+  INFO     Sanity checks: 'docker'
+
+  PLAY [Destroy] *****************************************************************************************************************************************
+
+  TASK [Destroy molecule instance(s)] ********************************************************************************************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) deletion to complete] *******************************************************************************************************
+  FAILED - RETRYING: Wait for instance(s) deletion to complete (300 retries left).
+  ok: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '746796232096.267088', 'results_file': '/home/wizard/.ansible_async/746796232096.267088', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True}, 'ansible_loop_var': 'item'})
+
+  TASK [Delete docker network(s)] ************************************************************************************************************************
+
+  PLAY RECAP *********************************************************************************************************************************************
+  localhost                  : ok=2    changed=1    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+
+  INFO     Running alternative > create
+
+  PLAY [Create] ******************************************************************************************************************************************
+
+  TASK [Log into a Docker registry] **********************************************************************************************************************
+  skipping: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True})
+
+  TASK [Check presence of custom Dockerfiles] ************************************************************************************************************
+  ok: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True})
+
+  TASK [Create Dockerfiles from image names] *************************************************************************************************************
+  skipping: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True})
+
+  TASK [Discover local Docker images] ********************************************************************************************************************
+  ok: [localhost] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True}, 'ansible_loop_var': 'item', 'i': 0, 'ansible_index_var': 'i'})
+
+  TASK [Build an Ansible compatible image (new)] *********************************************************************************************************
+  skipping: [localhost] => (item=molecule_local/docker.io/pycontribs/centos:7)
+
+  TASK [Create docker network(s)] ************************************************************************************************************************
+
+  TASK [Determine the CMD directives] ********************************************************************************************************************
+  ok: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True})
+
+  TASK [Create molecule instance(s)] *********************************************************************************************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) creation to complete] *******************************************************************************************************
+  FAILED - RETRYING: Wait for instance(s) creation to complete (300 retries left).
+  changed: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '243769558940.267220', 'results_file': '/home/wizard/.ansible_async/243769558940.267220', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True}, 'ansible_loop_var': 'item'})
+
+  PLAY RECAP *********************************************************************************************************************************************
+  localhost                  : ok=5    changed=2    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0
+
+  INFO     Running alternative > converge
+
+  PLAY [Converge] ****************************************************************************************************************************************
+
+  TASK [Gathering Facts] *********************************************************************************************************************************
+  ok: [centos7]
+
+  TASK [Include kibana-role] *****************************************************************************************************************************
+
+  TASK [kibana-role : Fail if unsupported system detected] ***********************************************************************************************
+  skipping: [centos7]
+
+  TASK [kibana-role : Create directory to download] ******************************************************************************************************
+  ok: [centos7 -> localhost]
+
+  TASK [kibana-role : include_tasks] *********************************************************************************************************************
+  included: /home/wizard/Dropbox/Разное/Netology/kibana-role/tasks/download_yum.yml for centos7
+
+  TASK [kibana-role : Download Kibana's rpm] *************************************************************************************************************
+  ok: [centos7 -> localhost]
+
+  TASK [kibana-role : Copy Kibana to managed node] *******************************************************************************************************
+  changed: [centos7]
+
+  TASK [kibana-role : include_tasks] *********************************************************************************************************************
+  included: /home/wizard/Dropbox/Разное/Netology/kibana-role/tasks/install_yum.yml for centos7
+
+  TASK [kibana-role : Install Kibana] ********************************************************************************************************************
+  changed: [centos7]
+
+  TASK [kibana-role : Configure Kibana] ******************************************************************************************************************
+  changed: [centos7]
+
+  RUNNING HANDLER [kibana-role : restart Kibana] *********************************************************************************************************
+  skipping: [centos7]
+
+  PLAY RECAP *********************************************************************************************************************************************
+  centos7                    : ok=8    changed=3    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0
+
+  INFO     Running alternative > destroy
+
+  PLAY [Destroy] *****************************************************************************************************************************************
+
+  TASK [Destroy molecule instance(s)] ********************************************************************************************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) deletion to complete] *******************************************************************************************************
+  FAILED - RETRYING: Wait for instance(s) deletion to complete (300 retries left).
+  changed: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '664248577647.268787', 'results_file': '/home/wizard/.ansible_async/664248577647.268787', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True}, 'ansible_loop_var': 'item'})
+
+  TASK [Delete docker network(s)] ************************************************************************************************************************
+
+  PLAY RECAP *********************************************************************************************************************************************
+  localhost                  : ok=2    changed=2    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+
+  INFO     Pruning extra files from scenario ephemeral directory
+  py39-ansible30 installed: ansible==3.0.0,ansible-base==2.10.14,ansible-lint==5.1.3,arrow==1.1.1,bcrypt==3.2.0,binaryornot==0.4.4,bracex==2.1.1,Cerberus==1.3.2,certifi==2021.5.30,cffi==1.14.6,chardet==4.0.0,charset-normalizer==2.0.5,click==8.0.1,click-help-colors==0.9.1,colorama==0.4.4,commonmark==0.9.1,cookiecutter==1.7.3,cryptography==3.4.8,distro==1.6.0,docker==5.0.2,enrich==1.2.6,idna==3.2,Jinja2==3.0.1,jinja2-time==0.2.0,MarkupSafe==2.0.1,molecule==3.4.0,molecule-docker==0.2.4,packaging==21.0,paramiko==2.7.2,pathspec==0.9.0,pluggy==0.13.1,poyo==0.5.0,pycparser==2.20,Pygments==2.10.0,PyNaCl==1.4.0,pyparsing==2.4.7,python-dateutil==2.8.2,python-slugify==5.0.2,PyYAML==5.4.1,requests==2.26.0,rich==10.9.0,ruamel.yaml==0.17.16,ruamel.yaml.clib==0.2.6,selinux==0.2.1,six==1.16.0,subprocess-tee==0.3.4,tenacity==8.0.1,text-unidecode==1.3,urllib3==1.26.6,wcmatch==8.2,websocket-client==1.2.1,yamllint==1.26.3
+  py39-ansible30 run-test-pre: PYTHONHASHSEED='2989693706'
+  py39-ansible30 run-test: commands[0] | molecule test -s alternative --destroy=always
+  INFO     alternative scenario test matrix: destroy, create, converge, destroy
+  INFO     Performing prerun...
+  INFO     Guessed /home/wizard/Dropbox/Разное/Netology/kibana-role as project root directory
+  WARNING  Computed fully qualified role name of kibana_role does not follow current galaxy requirements.
+  Please edit meta/main.yml and assure we can correctly determine full role name:
+
+  galaxy_info:
+  role_name: my_name  # if absent directory name hosting role is used instead
+  namespace: my_galaxy_namespace  # if absent, author is used instead
+
+  Namespace: https://galaxy.ansible.com/docs/contributing/namespaces.html#galaxy-namespace-limitations
+  Role: https://galaxy.ansible.com/docs/contributing/creating_role.html#role-names
+
+  As an alternative, you can add 'role-name' to either skip_list or warn_list.
+
+  INFO     Using /home/wizard/.cache/ansible-lint/1301d8/roles/kibana_role symlink to current repository in order to enable Ansible to find the role using its expected full name.
+  INFO     Added ANSIBLE_ROLES_PATH=~/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:/home/wizard/.cache/ansible-lint/1301d8/roles
+  INFO     Running alternative > destroy
+  INFO     Sanity checks: 'docker'
+
+  PLAY [Destroy] *****************************************************************
+
+  TASK [Destroy molecule instance(s)] ********************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) deletion to complete] *******************************
+  FAILED - RETRYING: Wait for instance(s) deletion to complete (300 retries left).
+  ok: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '763941907094.269073', 'results_file': '/home/wizard/.ansible_async/763941907094.269073', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True}, 'ansible_loop_var': 'item'})
+
+  TASK [Delete docker network(s)] ************************************************
+
+  PLAY RECAP *********************************************************************
+  localhost                  : ok=2    changed=1    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+
+  INFO     Running alternative > create
+
+  PLAY [Create] ******************************************************************
+
+  TASK [Log into a Docker registry] **********************************************
+  skipping: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True})
+
+  TASK [Check presence of custom Dockerfiles] ************************************
+  ok: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True})
+
+  TASK [Create Dockerfiles from image names] *************************************
+  skipping: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True})
+
+  TASK [Discover local Docker images] ********************************************
+  ok: [localhost] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True}, 'ansible_loop_var': 'item', 'i': 0, 'ansible_index_var': 'i'})
+
+  TASK [Build an Ansible compatible image (new)] *********************************
+  skipping: [localhost] => (item=molecule_local/docker.io/pycontribs/centos:7)
+
+  TASK [Create docker network(s)] ************************************************
+
+  TASK [Determine the CMD directives] ********************************************
+  ok: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True})
+
+  TASK [Create molecule instance(s)] *********************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) creation to complete] *******************************
+  FAILED - RETRYING: Wait for instance(s) creation to complete (300 retries left).
+  changed: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '944382274165.269228', 'results_file': '/home/wizard/.ansible_async/944382274165.269228', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True}, 'ansible_loop_var': 'item'})
+
+  PLAY RECAP *********************************************************************
+  localhost                  : ok=5    changed=2    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0
+
+  INFO     Running alternative > converge
+
+  PLAY [Converge] ****************************************************************
+
+  TASK [Gathering Facts] *********************************************************
+  ok: [centos7]
+
+  TASK [Include kibana-role] *****************************************************
+
+  TASK [kibana-role : Fail if unsupported system detected] ***********************
+  skipping: [centos7]
+
+  TASK [kibana-role : Create directory to download] ******************************
+  ok: [centos7 -> localhost]
+
+  TASK [kibana-role : include_tasks] *********************************************
+  included: /home/wizard/Dropbox/Разное/Netology/kibana-role/tasks/download_yum.yml for centos7
+
+  TASK [kibana-role : Download Kibana's rpm] *************************************
+  ok: [centos7 -> localhost]
+
+  TASK [kibana-role : Copy Kibana to managed node] *******************************
+  changed: [centos7]
+
+  TASK [kibana-role : include_tasks] *********************************************
+  included: /home/wizard/Dropbox/Разное/Netology/kibana-role/tasks/install_yum.yml for centos7
+
+  TASK [kibana-role : Install Kibana] ********************************************
+  changed: [centos7]
+
+  TASK [kibana-role : Configure Kibana] ******************************************
+  changed: [centos7]
+
+  RUNNING HANDLER [kibana-role : restart Kibana] *********************************
+  skipping: [centos7]
+
+  PLAY RECAP *********************************************************************
+  centos7                    : ok=8    changed=3    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0
+
+  INFO     Running alternative > destroy
+
+  PLAY [Destroy] *****************************************************************
+
+  TASK [Destroy molecule instance(s)] ********************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) deletion to complete] *******************************
+  FAILED - RETRYING: Wait for instance(s) deletion to complete (300 retries left).
+  changed: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '754842979064.270781', 'results_file': '/home/wizard/.ansible_async/754842979064.270781', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True, 'priveleged': True}, 'ansible_loop_var': 'item'})
+
+  TASK [Delete docker network(s)] ************************************************
+
+  PLAY RECAP *********************************************************************
+  localhost                  : ok=2    changed=2    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+
+  INFO     Pruning extra files from scenario ephemeral directory
+  _______________________________________________________________________ summary ________________________________________________________________________
+    py36-ansible28: commands succeeded
+    py36-ansible30: commands succeeded
+    py39-ansible28: commands succeeded
+    py39-ansible30: commands succeeded
+    congratulations :)
+  ```
+
+  </details>
+
+  <details>
+  <summary>Проделал те же манипуляции в каталоге filebeat-role: (развернуть)</summary>
+
+  ```bash
+  wizard:kibana-role/ (master✗) $ tox
+  py36-ansible28 create: /home/wizard/Dropbox/Разное/Netology/filebeat-role/.tox/py36-ansible28
+  py36-ansible28 installdeps: -rtest-requirements.txt, ansible<2.9
+  py36-ansible28 installed: ansible==2.8.20,ansible-lint==5.1.3,arrow==1.1.1,bcrypt==3.2.0,binaryornot==0.4.4,bracex==2.1.1,Cerberus==1.3.2,certifi==2021.5.30,cffi==1.14.6,chardet==4.0.0,charset-normalizer==2.0.5,click==8.0.1,click-help-colors==0.9.1,colorama==0.4.4,commonmark==0.9.1,cookiecutter==1.7.3,cryptography==3.4.8,dataclasses==0.8,distro==1.6.0,docker==5.0.2,enrich==1.2.6,idna==3.2,importlib-metadata==4.8.1,Jinja2==3.0.1,jinja2-time==0.2.0,MarkupSafe==2.0.1,molecule==3.4.0,molecule-docker==0.2.4,packaging==21.0,paramiko==2.7.2,pathspec==0.9.0,pluggy==0.13.1,poyo==0.5.0,pycparser==2.20,Pygments==2.10.0,PyNaCl==1.4.0,pyparsing==2.4.7,python-dateutil==2.8.2,python-slugify==5.0.2,PyYAML==5.4.1,requests==2.26.0,rich==10.9.0,ruamel.yaml==0.17.16,ruamel.yaml.clib==0.2.6,selinux==0.2.1,six==1.16.0,subprocess-tee==0.3.4,tenacity==8.0.1,text-unidecode==1.3,typing-extensions==3.10.0.2,urllib3==1.26.6,wcmatch==8.2,websocket-client==1.2.1,yamllint==1.26.3,zipp==3.5.0
+  py36-ansible28 run-test-pre: PYTHONHASHSEED='1806053558'
+  py36-ansible28 run-test: commands[0] | molecule test -s alternative --destroy=always
+  INFO     alternative scenario test matrix: destroy, create, converge, destroy
+  INFO     Performing prerun...
+  INFO     Guessed /home/wizard/Dropbox/Разное/Netology/filebeat-role as project root directory
+  WARNING  Computed fully qualified role name of filebeat-role does not follow current galaxy requirements.
+  Please edit meta/main.yml and assure we can correctly determine full role name:
+
+  galaxy_info:
+  role_name: my_name  # if absent directory name hosting role is used instead
+  namespace: my_galaxy_namespace  # if absent, author is used instead
+
+  Namespace: https://galaxy.ansible.com/docs/contributing/namespaces.html#galaxy-namespace-limitations
+  Role: https://galaxy.ansible.com/docs/contributing/creating_role.html#role-names
+
+  As an alternative, you can add 'role-name' to either skip_list or warn_list.
+
+  INFO     Using /home/wizard/.cache/ansible-lint/73a37e/roles/filebeat-role symlink to current repository in order to enable Ansible to find the role using its expected full name.
+  INFO     Added ANSIBLE_ROLES_PATH=~/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:/home/wizard/.cache/ansible-lint/73a37e/roles
+  INFO     Running alternative > destroy
+  INFO     Sanity checks: 'docker'
+
+  PLAY [Destroy] *****************************************************************************************************************************************
+
+  TASK [Destroy molecule instance(s)] ********************************************************************************************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) deletion to complete] *******************************************************************************************************
+  FAILED - RETRYING: Wait for instance(s) deletion to complete (300 retries left).
+  ok: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '102654689747.272130', 'results_file': '/home/wizard/.ansible_async/102654689747.272130', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True}, 'ansible_loop_var': 'item'})
+
+  TASK [Delete docker network(s)] ************************************************************************************************************************
+
+  PLAY RECAP *********************************************************************************************************************************************
+  localhost                  : ok=2    changed=1    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+
+  INFO     Running alternative > create
+
+  PLAY [Create] ******************************************************************************************************************************************
+
+  TASK [Log into a Docker registry] **********************************************************************************************************************
+  skipping: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True})
+
+  TASK [Check presence of custom Dockerfiles] ************************************************************************************************************
+  ok: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True})
+
+  TASK [Create Dockerfiles from image names] *************************************************************************************************************
+  skipping: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True})
+
+  TASK [Discover local Docker images] ********************************************************************************************************************
+  ok: [localhost] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True}, 'ansible_loop_var': 'item', 'i': 0, 'ansible_index_var': 'i'})
+
+  TASK [Build an Ansible compatible image (new)] *********************************************************************************************************
+  skipping: [localhost] => (item=molecule_local/docker.io/pycontribs/centos:7)
+
+  TASK [Create docker network(s)] ************************************************************************************************************************
+
+  TASK [Determine the CMD directives] ********************************************************************************************************************
+  ok: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True})
+
+  TASK [Create molecule instance(s)] *********************************************************************************************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) creation to complete] *******************************************************************************************************
+  FAILED - RETRYING: Wait for instance(s) creation to complete (300 retries left).
+  changed: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '385611639176.272268', 'results_file': '/home/wizard/.ansible_async/385611639176.272268', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True}, 'ansible_loop_var': 'item'})
+
+  PLAY RECAP *********************************************************************************************************************************************
+  localhost                  : ok=5    changed=2    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0
+
+  INFO     Running alternative > converge
+
+  PLAY [Converge] ****************************************************************************************************************************************
+
+  TASK [Gathering Facts] *********************************************************************************************************************************
+  ok: [centos7]
+
+  TASK [Include filebeat-role] ***************************************************************************************************************************
+
+  TASK [filebeat-role : Fail if unsupported system detected] *********************************************************************************************
+  skipping: [centos7]
+
+  TASK [filebeat-role : Create directory to download] ****************************************************************************************************
+  changed: [centos7 -> localhost]
+
+  TASK [filebeat-role : include_tasks] *******************************************************************************************************************
+  included: /home/wizard/Dropbox/Разное/Netology/filebeat-role/tasks/download_yum.yml for centos7
+
+  TASK [filebeat-role : Download Filebeat's rpm] *********************************************************************************************************
+  changed: [centos7 -> localhost]
+
+  TASK [filebeat-role : Copy Filebeat to managed node] ***************************************************************************************************
+  changed: [centos7]
+
+  TASK [filebeat-role : include_tasks] *******************************************************************************************************************
+  included: /home/wizard/Dropbox/Разное/Netology/filebeat-role/tasks/install_yum.yml for centos7
+
+  TASK [filebeat-role : Install Filebeat] ****************************************************************************************************************
+  changed: [centos7]
+
+  TASK [filebeat-role : Configure Filebeat] **************************************************************************************************************
+  changed: [centos7]
+
+  TASK [filebeat-role : Set filebeat systemwork] *********************************************************************************************************
+  changed: [centos7]
+
+  TASK [filebeat-role : Load Kibana dashboard] ***********************************************************************************************************
+  skipping: [centos7]
+
+  RUNNING HANDLER [filebeat-role : restart Filebeat] *****************************************************************************************************
+  skipping: [centos7]
+
+  PLAY RECAP *********************************************************************************************************************************************
+  centos7                    : ok=9    changed=6    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0
+
+  INFO     Running alternative > destroy
+
+  PLAY [Destroy] *****************************************************************************************************************************************
+
+  TASK [Destroy molecule instance(s)] ********************************************************************************************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) deletion to complete] *******************************************************************************************************
+  FAILED - RETRYING: Wait for instance(s) deletion to complete (300 retries left).
+  changed: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '364133280501.273899', 'results_file': '/home/wizard/.ansible_async/364133280501.273899', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True}, 'ansible_loop_var': 'item'})
+
+  TASK [Delete docker network(s)] ************************************************************************************************************************
+
+  PLAY RECAP *********************************************************************************************************************************************
+  localhost                  : ok=2    changed=2    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+
+  INFO     Pruning extra files from scenario ephemeral directory
+  py36-ansible30 create: /home/wizard/Dropbox/Разное/Netology/filebeat-role/.tox/py36-ansible30
+  py36-ansible30 installdeps: -rtest-requirements.txt, ansible<3.1
+  py36-ansible30 installed: ansible==3.0.0,ansible-base==2.10.14,ansible-lint==5.1.3,arrow==1.1.1,bcrypt==3.2.0,binaryornot==0.4.4,bracex==2.1.1,Cerberus==1.3.2,certifi==2021.5.30,cffi==1.14.6,chardet==4.0.0,charset-normalizer==2.0.5,click==8.0.1,click-help-colors==0.9.1,colorama==0.4.4,commonmark==0.9.1,cookiecutter==1.7.3,cryptography==3.4.8,dataclasses==0.8,distro==1.6.0,docker==5.0.2,enrich==1.2.6,idna==3.2,importlib-metadata==4.8.1,Jinja2==3.0.1,jinja2-time==0.2.0,MarkupSafe==2.0.1,molecule==3.4.0,molecule-docker==0.2.4,packaging==21.0,paramiko==2.7.2,pathspec==0.9.0,pluggy==0.13.1,poyo==0.5.0,pycparser==2.20,Pygments==2.10.0,PyNaCl==1.4.0,pyparsing==2.4.7,python-dateutil==2.8.2,python-slugify==5.0.2,PyYAML==5.4.1,requests==2.26.0,rich==10.9.0,ruamel.yaml==0.17.16,ruamel.yaml.clib==0.2.6,selinux==0.2.1,six==1.16.0,subprocess-tee==0.3.4,tenacity==8.0.1,text-unidecode==1.3,typing-extensions==3.10.0.2,urllib3==1.26.6,wcmatch==8.2,websocket-client==1.2.1,yamllint==1.26.3,zipp==3.5.0
+  py36-ansible30 run-test-pre: PYTHONHASHSEED='1806053558'
+  py36-ansible30 run-test: commands[0] | molecule test -s alternative --destroy=always
+  INFO     alternative scenario test matrix: destroy, create, converge, destroy
+  INFO     Performing prerun...
+  INFO     Guessed /home/wizard/Dropbox/Разное/Netology/filebeat-role as project root directory
+  WARNING  Computed fully qualified role name of filebeat-role does not follow current galaxy requirements.
+  Please edit meta/main.yml and assure we can correctly determine full role name:
+
+  galaxy_info:
+  role_name: my_name  # if absent directory name hosting role is used instead
+  namespace: my_galaxy_namespace  # if absent, author is used instead
+
+  Namespace: https://galaxy.ansible.com/docs/contributing/namespaces.html#galaxy-namespace-limitations
+  Role: https://galaxy.ansible.com/docs/contributing/creating_role.html#role-names
+
+  As an alternative, you can add 'role-name' to either skip_list or warn_list.
+
+  INFO     Using /home/wizard/.cache/ansible-lint/73a37e/roles/filebeat-role symlink to current repository in order to enable Ansible to find the role using its expected full name.
+  INFO     Added ANSIBLE_ROLES_PATH=~/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:/home/wizard/.cache/ansible-lint/73a37e/roles
+  INFO     Running alternative > destroy
+  INFO     Sanity checks: 'docker'
+
+  PLAY [Destroy] *****************************************************************
+
+  TASK [Destroy molecule instance(s)] ********************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) deletion to complete] *******************************
+  FAILED - RETRYING: Wait for instance(s) deletion to complete (300 retries left).
+  ok: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '804145135896.274292', 'results_file': '/home/wizard/.ansible_async/804145135896.274292', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True}, 'ansible_loop_var': 'item'})
+
+  TASK [Delete docker network(s)] ************************************************
+
+  PLAY RECAP *********************************************************************
+  localhost                  : ok=2    changed=1    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+
+  INFO     Running alternative > create
+
+  PLAY [Create] ******************************************************************
+
+  TASK [Log into a Docker registry] **********************************************
+  skipping: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True})
+
+  TASK [Check presence of custom Dockerfiles] ************************************
+  ok: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True})
+
+  TASK [Create Dockerfiles from image names] *************************************
+  skipping: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True})
+
+  TASK [Discover local Docker images] ********************************************
+  ok: [localhost] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True}, 'ansible_loop_var': 'item', 'i': 0, 'ansible_index_var': 'i'})
+
+  TASK [Build an Ansible compatible image (new)] *********************************
+  skipping: [localhost] => (item=molecule_local/docker.io/pycontribs/centos:7)
+
+  TASK [Create docker network(s)] ************************************************
+
+  TASK [Determine the CMD directives] ********************************************
+  ok: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True})
+
+  TASK [Create molecule instance(s)] *********************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) creation to complete] *******************************
+  FAILED - RETRYING: Wait for instance(s) creation to complete (300 retries left).
+  changed: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '136480669990.274457', 'results_file': '/home/wizard/.ansible_async/136480669990.274457', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True}, 'ansible_loop_var': 'item'})
+
+  PLAY RECAP *********************************************************************
+  localhost                  : ok=5    changed=2    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0
+
+  INFO     Running alternative > converge
+
+  PLAY [Converge] ****************************************************************
+
+  TASK [Gathering Facts] *********************************************************
+  ok: [centos7]
+
+  TASK [Include filebeat-role] ***************************************************
+
+  TASK [filebeat-role : Fail if unsupported system detected] *********************
+  skipping: [centos7]
+
+  TASK [filebeat-role : Create directory to download] ****************************
+  ok: [centos7 -> localhost]
+
+  TASK [filebeat-role : include_tasks] *******************************************
+  included: /home/wizard/Dropbox/Разное/Netology/filebeat-role/tasks/download_yum.yml for centos7
+
+  TASK [filebeat-role : Download Filebeat's rpm] *********************************
+  ok: [centos7 -> localhost]
+
+  TASK [filebeat-role : Copy Filebeat to managed node] ***************************
+  changed: [centos7]
+
+  TASK [filebeat-role : include_tasks] *******************************************
+  included: /home/wizard/Dropbox/Разное/Netology/filebeat-role/tasks/install_yum.yml for centos7
+
+  TASK [filebeat-role : Install Filebeat] ****************************************
+  changed: [centos7]
+
+  TASK [filebeat-role : Configure Filebeat] **************************************
+  changed: [centos7]
+
+  TASK [filebeat-role : Set filebeat systemwork] *********************************
+  changed: [centos7]
+
+  TASK [filebeat-role : Load Kibana dashboard] ***********************************
+  skipping: [centos7]
+
+  RUNNING HANDLER [filebeat-role : restart Filebeat] *****************************
+  skipping: [centos7]
+
+  PLAY RECAP *********************************************************************
+  centos7                    : ok=9    changed=4    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0
+
+  INFO     Running alternative > destroy
+
+  PLAY [Destroy] *****************************************************************
+
+  TASK [Destroy molecule instance(s)] ********************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) deletion to complete] *******************************
+  FAILED - RETRYING: Wait for instance(s) deletion to complete (300 retries left).
+  changed: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '164462513783.276054', 'results_file': '/home/wizard/.ansible_async/164462513783.276054', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True}, 'ansible_loop_var': 'item'})
+
+  TASK [Delete docker network(s)] ************************************************
+
+  PLAY RECAP *********************************************************************
+  localhost                  : ok=2    changed=2    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+
+  INFO     Pruning extra files from scenario ephemeral directory
+  py39-ansible28 create: /home/wizard/Dropbox/Разное/Netology/filebeat-role/.tox/py39-ansible28
+  py39-ansible28 installdeps: -rtest-requirements.txt, ansible<2.9
+  py39-ansible28 installed: ansible==2.8.20,ansible-lint==5.1.3,arrow==1.1.1,bcrypt==3.2.0,binaryornot==0.4.4,bracex==2.1.1,Cerberus==1.3.2,certifi==2021.5.30,cffi==1.14.6,chardet==4.0.0,charset-normalizer==2.0.5,click==8.0.1,click-help-colors==0.9.1,colorama==0.4.4,commonmark==0.9.1,cookiecutter==1.7.3,cryptography==3.4.8,distro==1.6.0,docker==5.0.2,enrich==1.2.6,idna==3.2,Jinja2==3.0.1,jinja2-time==0.2.0,MarkupSafe==2.0.1,molecule==3.4.0,molecule-docker==0.2.4,packaging==21.0,paramiko==2.7.2,pathspec==0.9.0,pluggy==0.13.1,poyo==0.5.0,pycparser==2.20,Pygments==2.10.0,PyNaCl==1.4.0,pyparsing==2.4.7,python-dateutil==2.8.2,python-slugify==5.0.2,PyYAML==5.4.1,requests==2.26.0,rich==10.9.0,ruamel.yaml==0.17.16,ruamel.yaml.clib==0.2.6,selinux==0.2.1,six==1.16.0,subprocess-tee==0.3.4,tenacity==8.0.1,text-unidecode==1.3,urllib3==1.26.6,wcmatch==8.2,websocket-client==1.2.1,yamllint==1.26.3
+  py39-ansible28 run-test-pre: PYTHONHASHSEED='1806053558'
+  py39-ansible28 run-test: commands[0] | molecule test -s alternative --destroy=always
+  INFO     alternative scenario test matrix: destroy, create, converge, destroy
+  INFO     Performing prerun...
+  INFO     Guessed /home/wizard/Dropbox/Разное/Netology/filebeat-role as project root directory
+  WARNING  Computed fully qualified role name of filebeat-role does not follow current galaxy requirements.
+  Please edit meta/main.yml and assure we can correctly determine full role name:
+
+  galaxy_info:
+  role_name: my_name  # if absent directory name hosting role is used instead
+  namespace: my_galaxy_namespace  # if absent, author is used instead
+
+  Namespace: https://galaxy.ansible.com/docs/contributing/namespaces.html#galaxy-namespace-limitations
+  Role: https://galaxy.ansible.com/docs/contributing/creating_role.html#role-names
+
+  As an alternative, you can add 'role-name' to either skip_list or warn_list.
+
+  INFO     Using /home/wizard/.cache/ansible-lint/73a37e/roles/filebeat-role symlink to current repository in order to enable Ansible to find the role using its expected full name.
+  INFO     Added ANSIBLE_ROLES_PATH=~/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:/home/wizard/.cache/ansible-lint/73a37e/roles
+  INFO     Running alternative > destroy
+  INFO     Sanity checks: 'docker'
+
+  PLAY [Destroy] *****************************************************************************************************************************************
+
+  TASK [Destroy molecule instance(s)] ********************************************************************************************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) deletion to complete] *******************************************************************************************************
+  FAILED - RETRYING: Wait for instance(s) deletion to complete (300 retries left).
+  ok: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '934296906395.276252', 'results_file': '/home/wizard/.ansible_async/934296906395.276252', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True}, 'ansible_loop_var': 'item'})
+
+  TASK [Delete docker network(s)] ************************************************************************************************************************
+
+  PLAY RECAP *********************************************************************************************************************************************
+  localhost                  : ok=2    changed=1    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+
+  INFO     Running alternative > create
+
+  PLAY [Create] ******************************************************************************************************************************************
+
+  TASK [Log into a Docker registry] **********************************************************************************************************************
+  skipping: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True})
+
+  TASK [Check presence of custom Dockerfiles] ************************************************************************************************************
+  ok: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True})
+
+  TASK [Create Dockerfiles from image names] *************************************************************************************************************
+  skipping: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True})
+
+  TASK [Discover local Docker images] ********************************************************************************************************************
+  ok: [localhost] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True}, 'ansible_loop_var': 'item', 'i': 0, 'ansible_index_var': 'i'})
+
+  TASK [Build an Ansible compatible image (new)] *********************************************************************************************************
+  skipping: [localhost] => (item=molecule_local/docker.io/pycontribs/centos:7)
+
+  TASK [Create docker network(s)] ************************************************************************************************************************
+
+  TASK [Determine the CMD directives] ********************************************************************************************************************
+  ok: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True})
+
+  TASK [Create molecule instance(s)] *********************************************************************************************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) creation to complete] *******************************************************************************************************
+  FAILED - RETRYING: Wait for instance(s) creation to complete (300 retries left).
+  changed: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '552461465694.276368', 'results_file': '/home/wizard/.ansible_async/552461465694.276368', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True}, 'ansible_loop_var': 'item'})
+
+  PLAY RECAP *********************************************************************************************************************************************
+  localhost                  : ok=5    changed=2    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0
+
+  INFO     Running alternative > converge
+
+  PLAY [Converge] ****************************************************************************************************************************************
+
+  TASK [Gathering Facts] *********************************************************************************************************************************
+  ok: [centos7]
+
+  TASK [Include filebeat-role] ***************************************************************************************************************************
+
+  TASK [filebeat-role : Fail if unsupported system detected] *********************************************************************************************
+  skipping: [centos7]
+
+  TASK [filebeat-role : Create directory to download] ****************************************************************************************************
+  ok: [centos7 -> localhost]
+
+  TASK [filebeat-role : include_tasks] *******************************************************************************************************************
+  included: /home/wizard/Dropbox/Разное/Netology/filebeat-role/tasks/download_yum.yml for centos7
+
+  TASK [filebeat-role : Download Filebeat's rpm] *********************************************************************************************************
+  ok: [centos7 -> localhost]
+
+  TASK [filebeat-role : Copy Filebeat to managed node] ***************************************************************************************************
+  changed: [centos7]
+
+  TASK [filebeat-role : include_tasks] *******************************************************************************************************************
+  included: /home/wizard/Dropbox/Разное/Netology/filebeat-role/tasks/install_yum.yml for centos7
+
+  TASK [filebeat-role : Install Filebeat] ****************************************************************************************************************
+  changed: [centos7]
+
+  TASK [filebeat-role : Configure Filebeat] **************************************************************************************************************
+  changed: [centos7]
+
+  TASK [filebeat-role : Set filebeat systemwork] *********************************************************************************************************
+  changed: [centos7]
+
+  TASK [filebeat-role : Load Kibana dashboard] ***********************************************************************************************************
+  skipping: [centos7]
+
+  RUNNING HANDLER [filebeat-role : restart Filebeat] *****************************************************************************************************
+  skipping: [centos7]
+
+  PLAY RECAP *********************************************************************************************************************************************
+  centos7                    : ok=9    changed=4    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0
+
+  INFO     Running alternative > destroy
+
+  PLAY [Destroy] *****************************************************************************************************************************************
+
+  TASK [Destroy molecule instance(s)] ********************************************************************************************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) deletion to complete] *******************************************************************************************************
+  FAILED - RETRYING: Wait for instance(s) deletion to complete (300 retries left).
+  changed: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '364543116581.277926', 'results_file': '/home/wizard/.ansible_async/364543116581.277926', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True}, 'ansible_loop_var': 'item'})
+
+  TASK [Delete docker network(s)] ************************************************************************************************************************
+
+  PLAY RECAP *********************************************************************************************************************************************
+  localhost                  : ok=2    changed=2    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+
+  INFO     Pruning extra files from scenario ephemeral directory
+  py39-ansible30 create: /home/wizard/Dropbox/Разное/Netology/filebeat-role/.tox/py39-ansible30
+  py39-ansible30 installdeps: -rtest-requirements.txt, ansible<3.1
+  py39-ansible30 installed: ansible==3.0.0,ansible-base==2.10.14,ansible-lint==5.1.3,arrow==1.1.1,bcrypt==3.2.0,binaryornot==0.4.4,bracex==2.1.1,Cerberus==1.3.2,certifi==2021.5.30,cffi==1.14.6,chardet==4.0.0,charset-normalizer==2.0.5,click==8.0.1,click-help-colors==0.9.1,colorama==0.4.4,commonmark==0.9.1,cookiecutter==1.7.3,cryptography==3.4.8,distro==1.6.0,docker==5.0.2,enrich==1.2.6,idna==3.2,Jinja2==3.0.1,jinja2-time==0.2.0,MarkupSafe==2.0.1,molecule==3.4.0,molecule-docker==0.2.4,packaging==21.0,paramiko==2.7.2,pathspec==0.9.0,pluggy==0.13.1,poyo==0.5.0,pycparser==2.20,Pygments==2.10.0,PyNaCl==1.4.0,pyparsing==2.4.7,python-dateutil==2.8.2,python-slugify==5.0.2,PyYAML==5.4.1,requests==2.26.0,rich==10.9.0,ruamel.yaml==0.17.16,ruamel.yaml.clib==0.2.6,selinux==0.2.1,six==1.16.0,subprocess-tee==0.3.4,tenacity==8.0.1,text-unidecode==1.3,urllib3==1.26.6,wcmatch==8.2,websocket-client==1.2.1,yamllint==1.26.3
+  py39-ansible30 run-test-pre: PYTHONHASHSEED='1806053558'
+  py39-ansible30 run-test: commands[0] | molecule test -s alternative --destroy=always
+  INFO     alternative scenario test matrix: destroy, create, converge, destroy
+  INFO     Performing prerun...
+  INFO     Guessed /home/wizard/Dropbox/Разное/Netology/filebeat-role as project root directory
+  WARNING  Computed fully qualified role name of filebeat-role does not follow current galaxy requirements.
+  Please edit meta/main.yml and assure we can correctly determine full role name:
+
+  galaxy_info:
+  role_name: my_name  # if absent directory name hosting role is used instead
+  namespace: my_galaxy_namespace  # if absent, author is used instead
+
+  Namespace: https://galaxy.ansible.com/docs/contributing/namespaces.html#galaxy-namespace-limitations
+  Role: https://galaxy.ansible.com/docs/contributing/creating_role.html#role-names
+
+  As an alternative, you can add 'role-name' to either skip_list or warn_list.
+
+  INFO     Using /home/wizard/.cache/ansible-lint/73a37e/roles/filebeat-role symlink to current repository in order to enable Ansible to find the role using its expected full name.
+  INFO     Added ANSIBLE_ROLES_PATH=~/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:/home/wizard/.cache/ansible-lint/73a37e/roles
+  INFO     Running alternative > destroy
+  INFO     Sanity checks: 'docker'
+
+  PLAY [Destroy] *****************************************************************
+
+  TASK [Destroy molecule instance(s)] ********************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) deletion to complete] *******************************
+  FAILED - RETRYING: Wait for instance(s) deletion to complete (300 retries left).
+  ok: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '130787822448.278118', 'results_file': '/home/wizard/.ansible_async/130787822448.278118', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True}, 'ansible_loop_var': 'item'})
+
+  TASK [Delete docker network(s)] ************************************************
+
+  PLAY RECAP *********************************************************************
+  localhost                  : ok=2    changed=1    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+
+  INFO     Running alternative > create
+
+  PLAY [Create] ******************************************************************
+
+  TASK [Log into a Docker registry] **********************************************
+  skipping: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True})
+
+  TASK [Check presence of custom Dockerfiles] ************************************
+  ok: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True})
+
+  TASK [Create Dockerfiles from image names] *************************************
+  skipping: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True})
+
+  TASK [Discover local Docker images] ********************************************
+  ok: [localhost] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True}, 'ansible_loop_var': 'item', 'i': 0, 'ansible_index_var': 'i'})
+
+  TASK [Build an Ansible compatible image (new)] *********************************
+  skipping: [localhost] => (item=molecule_local/docker.io/pycontribs/centos:7)
+
+  TASK [Create docker network(s)] ************************************************
+
+  TASK [Determine the CMD directives] ********************************************
+  ok: [localhost] => (item={'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True})
+
+  TASK [Create molecule instance(s)] *********************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) creation to complete] *******************************
+  FAILED - RETRYING: Wait for instance(s) creation to complete (300 retries left).
+  changed: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '502919084037.278259', 'results_file': '/home/wizard/.ansible_async/502919084037.278259', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True}, 'ansible_loop_var': 'item'})
+
+  PLAY RECAP *********************************************************************
+  localhost                  : ok=5    changed=2    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0
+
+  INFO     Running alternative > converge
+
+  PLAY [Converge] ****************************************************************
+
+  TASK [Gathering Facts] *********************************************************
+  ok: [centos7]
+
+  TASK [Include filebeat-role] ***************************************************
+
+  TASK [filebeat-role : Fail if unsupported system detected] *********************
+  skipping: [centos7]
+
+  TASK [filebeat-role : Create directory to download] ****************************
+  ok: [centos7 -> localhost]
+
+  TASK [filebeat-role : include_tasks] *******************************************
+  included: /home/wizard/Dropbox/Разное/Netology/filebeat-role/tasks/download_yum.yml for centos7
+
+  TASK [filebeat-role : Download Filebeat's rpm] *********************************
+  ok: [centos7 -> localhost]
+
+  TASK [filebeat-role : Copy Filebeat to managed node] ***************************
+  changed: [centos7]
+
+  TASK [filebeat-role : include_tasks] *******************************************
+  included: /home/wizard/Dropbox/Разное/Netology/filebeat-role/tasks/install_yum.yml for centos7
+
+  TASK [filebeat-role : Install Filebeat] ****************************************
+  changed: [centos7]
+
+  TASK [filebeat-role : Configure Filebeat] **************************************
+  changed: [centos7]
+
+  TASK [filebeat-role : Set filebeat systemwork] *********************************
+  changed: [centos7]
+
+  TASK [filebeat-role : Load Kibana dashboard] ***********************************
+  skipping: [centos7]
+
+  RUNNING HANDLER [filebeat-role : restart Filebeat] *****************************
+  skipping: [centos7]
+
+  PLAY RECAP *********************************************************************
+  centos7                    : ok=9    changed=4    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0
+
+  INFO     Running alternative > destroy
+
+  PLAY [Destroy] *****************************************************************
+
+  TASK [Destroy molecule instance(s)] ********************************************
+  changed: [localhost] => (item=centos7)
+
+  TASK [Wait for instance(s) deletion to complete] *******************************
+  FAILED - RETRYING: Wait for instance(s) deletion to complete (300 retries left).
+  changed: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '128465705260.279842', 'results_file': '/home/wizard/.ansible_async/128465705260.279842', 'changed': True, 'failed': False, 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'centos7', 'pre_build_image': True}, 'ansible_loop_var': 'item'})
+
+  TASK [Delete docker network(s)] ************************************************
+
+  PLAY RECAP *********************************************************************
+  localhost                  : ok=2    changed=2    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+
+  INFO     Pruning extra files from scenario ephemeral directory
+  _______________________________________________________________________ summary ________________________________________________________________________
+    py36-ansible28: commands succeeded
+    py36-ansible30: commands succeeded
+    py39-ansible28: commands succeeded
+    py39-ansible30: commands succeeded
+    congratulations :)
+  ```
+
+  </details>
 
 ## Необязательная часть
 
