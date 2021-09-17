@@ -1,4 +1,4 @@
-FROM registry.redhat.io/rhel8/podman:8.3
+FROM registry.redhat.io/rhel8/podman:latest
 ENV MOLECULE_NO_LOG false
 
 RUN yum update -y && yum install tar gcc git make python3-pip zlib-devel openssl-devel yum-utils libffi-devel -y

@@ -3,4 +3,11 @@
   scm: git
   version: "2.0.2"
   name: elastic
-
+- src: git@github.com:tabwizard/kibana-role.git
+  scm: git
+  version: "1.2.0"
+  name: kibana-role
+- src: git@github.com:tabwizard/filebeat-role.git
+  scm: git
+  version: "1.2.0"
+  name: filebeat-role
