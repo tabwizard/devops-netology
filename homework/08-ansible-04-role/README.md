@@ -156,6 +156,10 @@ kbn-instance               : ok=8    changed=4    unreachable=0    failed=0    s
 
 [![Screenshot](Screenshot_20210913_115616.png)](Screenshot_20210913_115616.png)
 
+Данная рабочая версия ролей помечена тэгом `1.0.0`  
+[Kibana-role](https://github.com/tabwizard/kibana-role/releases/tag/1.0.0)  
+[Filebeat-role](https://github.com/tabwizard/filebeat-role/releases/tag/1.0.0)
+
 ## Необязательная часть
 
 1. Проделайте схожие манипуляции для создания роли logstash.
