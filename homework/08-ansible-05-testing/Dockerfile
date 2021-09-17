@@ -1,8 +1,8 @@
-FROM registry.redhat.io/rhel8/podman:latest
+FROM registry.redhat.io/rhel8/podman:8.3
 ENV MOLECULE_NO_LOG false
 
+RUN yum update -y && yum install tar gcc git make python3-pip zlib-devel openssl-devel yum-utils libffi-devel -y
 RUN yum reinstall glibc-common -y
-RUN yum update -y && yum install tar gcc make python3-pip zlib-devel openssl-devel yum-utils libffi-devel -y
 
 ADD https://www.python.org/ftp/python/3.6.13/Python-3.6.13.tgz Python-3.6.13.tgz
 RUN tar xf Python-3.6.13.tgz && cd Python-3.6.13/ && ./configure && make && make altinstall

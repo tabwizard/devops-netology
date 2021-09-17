@@ -77,7 +77,7 @@
 4. Добавьте несколько assert'ов в verify.yml файл, для  проверки работоспособности kibana-role (проверка, что web отвечает, проверка логов, etc). Запустите тестирование роли повторно и проверьте, что оно прошло успешно.
 
     **ОТВЕТ 2-4:** Создал для роли `kibana-role` сценарий тестирования по умолчанию,
-    Добавил для инстансов разные дистрибутивы (), протестировал роль, исправил ошибки.
+    Добавил для инстансов разные дистрибутивы (centos:7, centos:8, ubuntu:latest), протестировал роль, исправил ошибки.
     Добавил 2 assert`a на существование pid и log файлов kibana,
     <details>
     <summary> проверил: (развернуть)</summary>
@@ -719,8 +719,8 @@
     localhost                  : ok=2    changed=2    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
 
     INFO     Pruning extra files from scenario ephemeral directory
-
     ```
+
     </details>
 
 6. Добавьте новый тег на коммит с рабочим сценарием в соответствии с семантическим версионированием.
@@ -736,7 +736,64 @@
 7. Зайти поочерёдно в каждую из них и запустите команду `tox`. Убедитесь, что всё отработало успешно.
 8. Добавьте новый тег на коммит с рабочим сценарием в соответствии с семантическим версионированием.
 
-После выполнения у вас должно получится два сценария molecule и один tox.ini файл в каждом репозитории. Ссылки на репозитории являются ответами на домашнее задание. Не забудьте указать в ответе теги решений Tox и Molecule заданий.
+После выполнения у вас должно получится два сценария molecule и один tox.ini файл в каждом репозитории. Ссылки на репозитории являются ответами на домашнее задание. Не забудьте указать в ответе теги решений Tox и Molecule заданий.  
+
+  **ОТВЕТ:** Собрал образ из предложенного Dockerfile, клонировал репозиторий с elasticsearch-role, запустил docker командой `docker run -it -v /home/wizard/mnt-homeworks-ansible:/opt/elasticsearch-role -w /opt/elasticsearch-role wizard/tox_test  /bin/bash `
+  <details>
+  <summary>и поимел одни сплошные ошибки: (развернуть)</summary>
+
+  ```bash
+  wizard:~/ $ docker run -it -v /home/wizard/mnt-homeworks-ansible:/opt/  elasticsearch-role -w /opt/elasticsearch-role wizard/tox_test  /bin/bash
+  [root@4a09ab99162d elasticsearch-role]# tox
+  py36-ansible28 create: /opt/elasticsearch-role/.tox/py36-ansible28
+  py36-ansible28 installdeps: -rtest-requirements.txt, ansible<2.9
+  py36-ansible28 installed: ansible==2.8.20,ansible-lint==5.1.3,arrow==1.1.1,bcrypt==3.2.0,binaryornot==0.4.4,bracex==2.1.1,Cerberus==1.3.2,certifi==2021.5.30,cffi==1.14.6,chardet==4.0.0,charset-normalizer==2.0.5,click==8.0.1,click-help-colors==0.9.1,colorama==0.4.4,commonmark==0.9.1,cookiecutter==1.7.3,cryptography==3.4.8,dataclasses==0.8,distro==1.6.0,enrich==1.2.6,idna==3.2,importlib-metadata==4.8.1,Jinja2==3.0.1,jinja2-time==0.2.0,MarkupSafe==2.0.1,molecule==3.4.0,molecule-podman==0.3.0,packaging==21.0,paramiko==2.7.2,pathspec==0.9.0,pluggy==0.13.1,podman==3.2.0,poyo==0.5.0,pycparser==2.20,Pygments==2.10.0,PyNaCl==1.4.0,pyparsing==2.4.7,python-dateutil==2.8.2,python-slugify==5.0.2,pyxdg==0.27,PyYAML==5.4.1,requests==2.26.0,rich==10.9.0,ruamel.yaml==0.17.16,ruamel.yaml.clib==0.2.6,selinux==0.2.1,six==1.16.0,subprocess-tee==0.3.4,tenacity==8.0.1,text-unidecode==1.3,toml==0.10.2,typing-extensions==3.10.0.2,urllib3==1.26.6,wcmatch==8.2,yamllint==1.26.3,zipp==3.5.0
+  py36-ansible28 run-test-pre: PYTHONHASHSEED='1682269791'
+  py36-ansible28 run-test: commands[0] | molecule test -s alternative --destroy=always
+  INFO     alternative scenario test matrix: destroy, create, converge, destroy
+  INFO     Performing prerun...
+  WARNING  Failed to locate command: [Errno 2] No such file or directory: 'git': 'git'
+  INFO     Guessed /opt/elasticsearch-role as project root directory
+  WARNING  Computed fully qualified role name of elasticsearch_role does not follow current galaxy requirements.
+  Please edit meta/main.yml and assure we can correctly determine full role name:
+  ...
+  ...
+  ...
+  TASK [Discover local Podman images] ********************************************
+  failed: [localhost] (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': {'image': 'docker.io/pycontribs/centos:7', 'name': 'instance', 'pre_build_image': True}, 'ansible_loop_var': 'item', 'i': 0, 'ansible_index_var': 'i'}) => {"ansible_loop_var": "item", "changed": false, "item": {"ansible_index_var": "i", "ansible_loop_var": "item", "changed": false, "i": 0, "item": {"image": "docker.io/pycontribs/centos:7", "name": "instance", "pre_build_image": true}, "skip_reason": "Conditional result was False", "skipped": true}, "msg": "Unable to gather info for 'molecule_local/instance': cannot clone: Operation not permitted\nError: cannot re-exec process\n"}
+
+  PLAY RECAP *********************************************************************
+  localhost                  : ok=1    changed=0    unreachable=0    failed=1    skipped=2    rescued=0    ignored=0
+
+  CRITICAL Ansible return code was 2, command was: ['ansible-playbook', '--inventory', '/root/.cache/molecule/elasticsearch-role/alternative/inventory', '--skip-tags', 'molecule-notest,notest', '/opt/elasticsearch-role/.tox/py39-ansible30/lib/python3.9/site-packages/molecule_podman/playbooks/create.yml']
+  WARNING  An error occurred during the test sequence action: 'create'. Cleaning up.
+  INFO     Running alternative > cleanup
+  WARNING  Skipping, cleanup playbook not configured.
+  INFO     Running alternative > destroy
+  ...
+  ...
+  ...
+  INFO     Pruning extra files from scenario ephemeral directory
+  ERROR: InvocationError for command /opt/elasticsearch-role/.tox/py39-ansible30/bin/molecule test -s alternative --destroy=always (exited with code 1)
+  ______________________________________________________________________________ summary ______________________________________________________________________________
+  ERROR:   py36-ansible28: commands failed
+  ERROR:   py36-ansible30: commands failed
+  ERROR:   py39-ansible28: commands failed
+  ERROR:   py39-ansible30: commands failed
+  ```
+
+   </details>
+  Выяснилось, что внутри сваренного из предложенного Dockerfile образа `podman` категорически отказывается работать:
+
+  ```bash
+  [root@4a09ab99162d elasticsearch-role]# podman info
+  cannot clone: Operation not permitted
+  Error: cannot re-exec process
+  [root@4a09ab99162d elasticsearch-role]# podman ps
+  cannot clone: Operation not permitted
+  Error: cannot re-exec process
+  ```
+  В итоге дополнительные сценарии для molecule создал, фалы `tox.ini` и `test-requirements.txt` подготовил, tox проверить не смог как, собственно, и преподаватель на лекции, хотя там ошибки были другие.
 
 ## Необязательная часть
 
