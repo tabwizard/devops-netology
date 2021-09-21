@@ -1,4 +1,4 @@
-# Домашнее задание к занятию "08.04 Создание собственных modules"
+# Домашняя работа к занятию "08.04 Создание собственных modules"
 
 ## Подготовка к выполнению
 
@@ -209,6 +209,8 @@ ok: [localhost] => {"changed": false, "res_content": "Some text inside file 1231
 PLAY RECAP *********************************************************************************************************************************************
 localhost                  : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
+[playbook](./site.yml) и [архив с коллекцией](./my_own_namespace-yandex_cloud_elk-1.0.0.tar.gz)
+
 
 ## Необязательная часть
 
