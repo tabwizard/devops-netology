@@ -1,0 +1,8 @@
+---
+- name: Playbook test file_create role
+  hosts: localhost
+  roles:
+    - role: my_own_namespace.yandex_cloud_elk.file_create
+      vars:
+        file_create_path: "./my_test_playbook_file111"
+        file_create_content: "Some text inside file 1231"
