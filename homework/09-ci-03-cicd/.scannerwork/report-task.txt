@@ -1,0 +1,6 @@
+projectKey=netology
+serverUrl=http://62.84.120.34:9000
+serverVersion=9.1.0.47736
+dashboardUrl=http://62.84.120.34:9000/dashboard?id=netology
+ceTaskId=AXxYcHxURw7o9QpNecx1
+ceTaskUrl=http://62.84.120.34:9000/api/ce/task?id=AXxYcHxURw7o9QpNecx1
