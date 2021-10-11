@@ -158,7 +158,7 @@ wizard:infrastructure/ (MNT-7) $ ssh 84.201.143.76
    [![Screenshot_20211011_113837.png](./Screenshot_20211011_113837.png)](./Screenshot_20211011_113837.png)
    [![Screenshot_20211011_113853.png](./Screenshot_20211011_113853.png)](./Screenshot_20211011_113853.png)
    [Репозиторий Kibana-role](https://github.com/tabwizard/kibana-role)  
-   
+
 5. Создать Scripted Pipeline, наполнить его скриптом из [pipeline](./pipeline).
 6. Внести необходимые изменения, чтобы Pipeline запускал `ansible-playbook` без флагов `--check --diff`, если не установлен параметр при запуске джобы (prod_run = True), по умолчанию параметр имеет значение False и запускает прогон с флагами `--check --diff`.
 7. Проверить работоспособность, исправить ошибки, исправленный Pipeline вложить в репозиторий в файл `ScriptedJenkinsfile`. Цель: получить собранный стек ELK в Ya.Cloud.
@@ -174,6 +174,7 @@ wizard:infrastructure/ (MNT-7) $ ssh 84.201.143.76
   </details>
 
   [ScriptedJenkinsfile](./ScriptedJenkinsfile)
+
   ```bash
     node("linux"){
         stage("Git checkout"){
