@@ -50,10 +50,6 @@ Filebeat следует сконфигурировать для отправки
 [![Screenshot_20211103_091818.png](./Screenshot_20211103_091818.png)](./Screenshot_20211103_091818.png)  
 [![Screenshot_20211103_092122.png](./Screenshot_20211103_092122.png)](./Screenshot_20211103_092122.png)  
 [![Screenshot_20211103_092019.png](./Screenshot_20211103_092019.png)](./Screenshot_20211103_092019.png)  
-[docker-compose.yml](./help/docker-compose.yml)  
-[pipelines.yml](./help/configs/pipelines.yml)  
-[netology_pipeline.conf](./help/configs/pipelines/netology_pipeline.conf)  
-[logstash.conf](./help/configs/logstash.conf)  
 
 ## Задание 2
 
