@@ -66,17 +66,8 @@ hello-node-7567d9fdc9-dwlw8   1/1     Running   0          37s
 * Получаем название секрета созданного пользователя
   
     ```bash
-    wizard:~/ $ kubectl -n app-namespace get serviceaccounts testuser -o yaml
-    apiVersion: v1
-    kind: ServiceAccount
-    metadata:
-    creationTimestamp: "2021-12-24T15:05:49Z"
-    name: testuser
-    namespace: app-namespace
-    resourceVersion: "6299"
-    uid: 6c5d0281-c8f5-4c99-8dbc-1c3b70828846
-    secrets:
-    - name: testuser-token-pm2cc
+    wizard:~/ $ kubectl -n app-namespace get serviceaccounts testuser -o jsonpath='{.secrets[].name}'
+    testuser-token-pm2cc
     ```
 
 * Получаем токен созданного пользователя из секрета
