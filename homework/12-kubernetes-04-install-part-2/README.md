@@ -21,8 +21,8 @@
   - `CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inventory.py ${IPS[@]}`
   - правим `inventory/mycluster/hosts.yaml`
 
-- В файле /kubespray/inventory/mycluster/group_vars/k8s_cluster.yml устанавливаем CRI: `container_manager: containerd`
-- inventory/mycluster/hosts.yaml:
+- В файле `/kubespray/inventory/mycluster/group_vars/k8s_cluster.yml` устанавливаем CRI: `container_manager: containerd`
+- `inventory/mycluster/hosts.yaml`:
 
   ```yaml
   all:
@@ -304,7 +304,7 @@ node2   Ready    <none>                 24m   v1.23.1   172.31.60.103   <none>  
 node3   Ready    <none>                 24m   v1.23.1   172.31.59.229   <none>        Ubuntu 20.04.3 LTS   5.11.0-1025-aws   containerd://1.5.9
 node4   Ready    <none>                 24m   v1.23.1   172.31.56.124   <none>        Ubuntu 20.04.3 LTS   5.11.0-1025-aws   containerd://1.5.9
 
-wizard:.kube/ $ kubectl label node node1 node2 node3 node4 node-role.kubernetes.io/worker=                                                         [16:06:18]
+wizard:.kube/ $ kubectl label node node1 node2 node3 node4 node-role.kubernetes.io/worker=
 node/node1 labeled
 node/node2 labeled
 node/node3 labeled
