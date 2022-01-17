@@ -6,22 +6,23 @@
 
 Новые тестовые кластеры требуют типичных простых настроек. Нужно подготовить инвентарь и проверить его работу. Требования к инвентарю:
 
-* подготовка работы кластера из 5 нод: 1 мастер и 4 рабочие ноды;
-* в качестве CRI — containerd;
-* запуск etcd производить на мастере.
+- подготовка работы кластера из 5 нод: 1 мастер и 4 рабочие ноды;
+- в качестве CRI — containerd;
+- запуск etcd производить на мастере.
 
 **ОТВЕТ:**
 
-* Действуем по инструкции:
-  * `git clone`
-  * `sudo pip3 install -r requirements.txt`
-  * `cp -rfp inventory/sample inventory/mycluster`
-  * `declare -a IPS=(10.10.1.1 10.10.1.2 10.10.1.3 10.10.1.4 10.10.1.5)`
-  * `CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inventory.py ${IPS[@]}`
-  * правим `inventory/mycluster/hosts.yaml`
+- Действуем по инструкции:
 
-* В файле /kubespray/inventory/myclaster/group_vars/k8s_cluster.yml устанавливаем CRI: `container_manager: containerd`
-* inventory/mycluster/hosts.yaml:
+  - `git clone git@github.com:kubernetes-sigs/kubespray.git`
+  - `sudo pip3 install -r requirements.txt`
+  - `cp -rfp inventory/sample inventory/mycluster`
+  - `declare -a IPS=(10.10.1.1 10.10.1.2 10.10.1.3 10.10.1.4 10.10.1.5)`
+  - `CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inventory.py ${IPS[@]}`
+  - правим `inventory/mycluster/hosts.yaml`
+
+- В файле /kubespray/inventory/myclaster/group_vars/k8s_cluster.yml устанавливаем CRI: `container_manager: containerd`
+- inventory/mycluster/hosts.yaml:
 
   ```yaml
   all:
@@ -62,14 +63,14 @@
         hosts: {}
   ```
 
-## Задание 2 (*): подготовить и проверить инвентарь для кластера в AWS
+## Задание 2 (\*): подготовить и проверить инвентарь для кластера в AWS
 
 Часть новых проектов хотят запускать на мощностях AWS. Требования похожи:
 
-* разворачивать 5 нод: 1 мастер и 4 рабочие ноды;
-* работать должны на минимально допустимых EC2 — t3.small.
+- разворачивать 5 нод: 1 мастер и 4 рабочие ноды;
+- работать должны на минимально допустимых EC2 — t3.small.
 
-**ОТВЕТ**  Готовим файл для Terraform, чтобы подготовить ВМ на AWS для запуска кластера Kubernetes.  
+**ОТВЕТ** Готовим [файл для Terraform](./main.tf), чтобы подготовить ВМ на AWS для запуска кластера Kubernetes.
 
 ```bash
 wizard:12-kubernetes-04-install-part-2/ (main✗) $ terraform apply
@@ -150,14 +151,14 @@ aws_instance.wizard_node[3]: Creation complete after 23s [id=i-0aa14da4e5df11990
 Apply complete! Resources: 6 added, 0 changed, 0 destroyed.
 ```
 
-Правим `inventory/mycluster/hosts.yaml` в соответствии с данными AWS.  
-В `group_vars/all/all.yml` добавляем пользователя `ansible_user: ubuntu` и ключ для ssh `ansible_ssh_private_key_file: /home/wizard/.ssh/aws/aws` и для последующего доступа снаружи
+Правим [inventory/mycluster/hosts.yaml](./mycluster/hosts.yaml) в соответствии с данными AWS.  
+В [group_vars/all/all.yml](./mycluster/group_vars/all/all.yml) добавляем пользователя `ansible_user: ubuntu` и ключ для ssh `ansible_ssh_private_key_file: /home/wizard/.ssh/aws/aws` и для последующего доступа снаружи
 
 ```
 loadbalancer_apiserver:
   address: 35.86.59.86
   port: 6443
-```  
+```
 
 Затем запускаем playbook и мучаемся в томительном ожидании:
 
@@ -220,7 +221,7 @@ kubernetes/control-plane : Update server field in component kubeconfigs --------
 etcd : Check certs | Register ca and etcd node certs on kubernetes hosts ----------------------------------------------------------------------------- 18.95s
 kubernetes/preinstall : Ensure kube-bench parameters are set ----------------------------------------------------------------------------------------- 16.63s
 kubernetes/preinstall : Create cni directories ------------------------------------------------------------------------------------------------------- 16.61s
-```  
+```
 
 Подключимся по ssh на Control Plane и перенесем с него конфиг для доступа к кластеру на локальную машину, поменяем в нем адрес сервера и подключимся для проверки:
 
@@ -314,7 +315,7 @@ node1   Ready    worker                 27m   v1.23.1   172.31.58.254   <none>  
 node2   Ready    worker                 27m   v1.23.1   172.31.60.103   <none>        Ubuntu 20.04.3 LTS   5.11.0-1025-aws   containerd://1.5.9
 node3   Ready    worker                 27m   v1.23.1   172.31.59.229   <none>        Ubuntu 20.04.3 LTS   5.11.0-1025-aws   containerd://1.5.9
 node4   Ready    worker                 27m   v1.23.1   172.31.56.124   <none>        Ubuntu 20.04.3 LTS   5.11.0-1025-aws   containerd://1.5.9
-```  
+```
 
 [![./Screenshot_20220117_145806.png](./Screenshot_20220117_145806.png)](./Screenshot_20220117_145806.png)  
 [![./Screenshot_20220117_160852.png](./Screenshot_20220117_160852.png)](./Screenshot_20220117_160852.png)
