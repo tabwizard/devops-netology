@@ -1,4 +1,4 @@
-# Домашнее задание к занятию "12.4 Развертывание кластера на собственных серверах, лекция 2"
+# Домашняя работа к занятию "12.4 Развертывание кластера на собственных серверах, лекция 2"
 
 Новые проекты пошли стабильным потоком. Каждый проект требует себе несколько кластеров: под тесты и продуктив. Делать все руками — не вариант, поэтому стоит автоматизировать подготовку новых кластеров.
 
@@ -21,7 +21,7 @@
   - `CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inventory.py ${IPS[@]}`
   - правим `inventory/mycluster/hosts.yaml`
 
-- В файле /kubespray/inventory/myclaster/group_vars/k8s_cluster.yml устанавливаем CRI: `container_manager: containerd`
+- В файле /kubespray/inventory/mycluster/group_vars/k8s_cluster.yml устанавливаем CRI: `container_manager: containerd`
 - inventory/mycluster/hosts.yaml:
 
   ```yaml
@@ -59,9 +59,9 @@
         children:
           kube_control_plane:
           kube_node:
-      calico_rr:
-        hosts: {}
   ```
+
+  Проверять работу будем на AWS во втором задании
 
 ## Задание 2 (\*): подготовить и проверить инвентарь для кластера в AWS
 
@@ -151,10 +151,12 @@ aws_instance.wizard_node[3]: Creation complete after 23s [id=i-0aa14da4e5df11990
 Apply complete! Resources: 6 added, 0 changed, 0 destroyed.
 ```
 
+[![./Screenshot_20220117_145806.png](./Screenshot_20220117_145806.png)](./Screenshot_20220117_145806.png)  
+В настройках Security group в AWS добавим правила доступа снаружи к портам `22` и `6443` по `TCP`.  
 Правим [inventory/mycluster/hosts.yaml](./mycluster/hosts.yaml) в соответствии с данными AWS.  
-В [group_vars/all/all.yml](./mycluster/group_vars/all/all.yml) добавляем пользователя `ansible_user: ubuntu` и ключ для ssh `ansible_ssh_private_key_file: /home/wizard/.ssh/aws/aws` и для последующего доступа снаружи
+В [group_vars/all/all.yml](./mycluster/group_vars/all/all.yml) добавляем пользователя `ansible_user: ubuntu` и ключ для ssh `ansible_ssh_private_key_file: /home/wizard/.ssh/aws/aws` и для последующего доступа `kubectl` снаружи раскомментируем и пропишем секцию `loadbalancer_apiserver`:
 
-```
+```yaml
 loadbalancer_apiserver:
   address: 35.86.59.86
   port: 6443
@@ -317,7 +319,6 @@ node3   Ready    worker                 27m   v1.23.1   172.31.59.229   <none>  
 node4   Ready    worker                 27m   v1.23.1   172.31.56.124   <none>        Ubuntu 20.04.3 LTS   5.11.0-1025-aws   containerd://1.5.9
 ```
 
-[![./Screenshot_20220117_145806.png](./Screenshot_20220117_145806.png)](./Screenshot_20220117_145806.png)  
 [![./Screenshot_20220117_160852.png](./Screenshot_20220117_160852.png)](./Screenshot_20220117_160852.png)
 
 ---
