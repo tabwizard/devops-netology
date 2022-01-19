@@ -126,11 +126,6 @@ ping: echoserver-deployment-69db45c5c7-7s789: Name does not resolve
 **ОТВЕТ:**  Установим на локальную машину `calicoctl`: `wizard:~/ $ sudo pacman -Syu calicoctl-bin`. Проверим список нод, ipPool и profile:
 
 ```bash
-wizard:12-kubernetes-05-cni/ (main✗) $ calicoctl get node --allow-version-mismatch
-NAME
-cp
-node1
-
 wizard:12-kubernetes-05-cni/ (main✗) $ calicoctl get node --allow-version-mismatch -o wide
 NAME    ASN       IPV4              IPV6
 cp      (64512)   10.0.101.199/24
