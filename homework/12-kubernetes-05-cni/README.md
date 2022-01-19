@@ -156,7 +156,6 @@ kns.default
 kns.kube-node-lease
 kns.kube-public
 kns.kube-system
-kns.tigera-operator
 ksa.default.default
 ksa.kube-node-lease.default
 ksa.kube-public.default
@@ -199,8 +198,6 @@ ksa.kube-system.statefulset-controller
 ksa.kube-system.token-cleaner
 ksa.kube-system.ttl-after-finished-controller
 ksa.kube-system.ttl-controller
-ksa.tigera-operator.default
-ksa.tigera-operator.tigera-operator
 ```
 
 ### Как оформить ДЗ?
