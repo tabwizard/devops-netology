@@ -122,7 +122,7 @@ bash-5.1# curl http://10.233.90.2:8080
 bash-5.1# ping 10.233.90.2
 PING 10.233.90.2 (10.233.90.2) 56(84) bytes of data.
 ^C
---- 10.233.96.1 ping statistics ---
+--- 10.233.90.2 ping statistics ---
 3 packets transmitted, 0 received, 100% packet loss, time 2083ms
 
 ```
