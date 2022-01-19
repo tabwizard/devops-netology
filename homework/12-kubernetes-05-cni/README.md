@@ -19,10 +19,11 @@ cp      Ready    control-plane,master   29m   v1.23.1   10.0.101.199   <none>   
 node1   Ready    <none>                 24m   v1.23.1   10.0.101.12    <none>        Ubuntu 20.04.3 LTS   5.11.0-1025-aws   containerd://1.5.9
 ```
 
-Запустим тестовый под из файла [echoserver_deployment.yml](./echoserver_deployment.yml) и под для проверки [multitool_deployment.yml](./multitool_deployment.yml).
+Запустим тестовый под из файла [echoserver_deployment.yml](./echoserver_deployment.yml) и под для проверки [multitool_deployment.yml](./multitool_deployment.yml).  
+Проверим, что тестовый под пингуется и отвечает по порту 8080.
 
 ```bash
-kubectl apply -f ./echoserver_deployment.yml -f ./multitool_deployment.yml
+wizard:12-kubernetes-05-cni/ (main✗) $ kubectl apply -f ./echoserver_deployment.yml -f ./multitool_deployment.yml
 deployment.apps/echoserver-deployment created
 deployment.apps/multitool-deployment created
 
@@ -32,7 +33,7 @@ NAME                                     READY   STATUS    RESTARTS   AGE     IP
 echoserver-deployment-69db45c5c7-7s789   1/1     Running   0          3m22s   10.233.90.2   node1   <none>           <none>
 multitool-deployment-64c67d498c-ngxxd    1/1     Running   0          3m22s   10.233.90.3   node1   <none>           <none>
 
-wizard:kubespray/ (master✗) $ kubectl exec -it multitool-deployment-64c67d498c-ngxxd -- /bin/bash
+wizard:12-kubernetes-05-cni/ (main✗) $ kubectl exec -it multitool-deployment-64c67d498c-ngxxd -- /bin/bash
 
 bash-5.1# ping 10.233.90.2
 PING 10.233.90.2 (10.233.90.2) 56(84) bytes of data.
@@ -44,6 +45,7 @@ PING 10.233.90.2 (10.233.90.2) 56(84) bytes of data.
 --- 10.233.90.2 ping statistics ---
 4 packets transmitted, 4 received, 0% packet loss, time 3056ms
 rtt min/avg/max/mdev = 0.058/0.069/0.094/0.014 ms
+
 bash-5.1# curl http://10.233.90.2:8080
 CLIENT VALUES:
 client_address=10.233.90.3
@@ -65,32 +67,23 @@ BODY:
 bash-5.1#
 ```
 
-Применим сетевые политики из файлов [NetworkPolicy.yml](./NetworkPolicy.yml) и [NetworkPolicy2.yml](./NetworkPolicy2.yml):
+Применим сетевые политики из файла [NetworkPolicy.yml](./NetworkPolicy.yml) (разрешаем только порт 8080):
 
 ```bash
-wizard:12-kubernetes-05-cni/ (main✗) $ kubectl apply -f ./NetworkPolicy.yml -f ./NetworkPolicy2.yml
+wizard:12-kubernetes-05-cni/ (main✗) $ kubectl apply -f ./NetworkPolicy.yml
 networkpolicy.networking.k8s.io/test-network-policy created
-networkpolicy.networking.k8s.io/default-deny-all created
 
 wizard:12-kubernetes-05-cni/ (main✗) $ kubectl get networkpolicies
 NAME                  POD-SELECTOR     AGE
-default-deny-all      app=echoserver   3s
 test-network-policy   app=echoserver   4s
-```
 
-По хорошему после этого доступ по порту 8080 должен быть, а пинг не должен работать, но он почему-то продолжает работать, не понимаю почему. И еще почему-то из пода multitool-deployment-64c67d498c-ngxxd не резолвится под echoserver-deployment-69db45c5c7-7s789.
+wizard:12-kubernetes-05-cni/ (main✗) $ kubectl exec -it multitool-deployment-64c67d498c-ngxxd -- /bin/bash
 
-```bash
-wizard:12-kubernetes-05-cni/ (main✗) $ kubectl exec -it multitool-deployment-64c67d498c-ngxxd -- /bin/bash  
 bash-5.1# ping 10.233.90.2
 PING 10.233.90.2 (10.233.90.2) 56(84) bytes of data.
-64 bytes from 10.233.90.2: icmp_seq=1 ttl=63 time=0.060 ms
-64 bytes from 10.233.90.2: icmp_seq=2 ttl=63 time=0.069 ms
-64 bytes from 10.233.90.2: icmp_seq=3 ttl=63 time=0.051 ms
 ^C
 --- 10.233.90.2 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2055ms
-rtt min/avg/max/mdev = 0.051/0.060/0.069/0.007 ms
+8 packets transmitted, 0 received, 100% packet loss, time 7150ms
 
 bash-5.1# curl http://10.233.90.2:8080
 CLIENT VALUES:
@@ -110,10 +103,31 @@ host=10.233.90.2:8080
 user-agent=curl/7.79.1
 BODY:
 -no body in request-
-
-bash-5.1# ping echoserver-deployment-69db45c5c7-7s789
-ping: echoserver-deployment-69db45c5c7-7s789: Name does not resolve
 ```
+
+Теперь удалим политику test-network-policy и применим файл [NetworkPolicy2.yml](./NetworkPolicy2.yml) с полным запретом сетевого взаимодействия
+
+```bash
+wizard:12-kubernetes-05-cni/ (main✗) $ kubectl delete networkpolicies test-network-policy
+networkpolicy.networking.k8s.io "test-network-policy" deleted
+
+wizard:12-kubernetes-05-cni/ (main✗) $ kubectl apply -f ./NetworkPolicy2.yml
+networkpolicy.networking.k8s.io/default-deny-all created
+
+wizard:12-kubernetes-05-cni/ (main✗) $ kubectl exec -it multitool-deployment-64c67d498c-hvghg -- /bin/bash
+
+bash-5.1# curl http://10.233.90.2:8080
+^C
+
+bash-5.1# ping 10.233.90.2
+PING 10.233.90.2 (10.233.90.2) 56(84) bytes of data.
+^C
+--- 10.233.96.1 ping statistics ---
+3 packets transmitted, 0 received, 100% packet loss, time 2083ms
+
+```
+
+Что и требовалось доказать - никакие пакеты не ходят.
 
 ## Задание 2: изучить, что запущено по умолчанию
 
