@@ -56,6 +56,8 @@ spec:
     - name: "9000"
       port: 9000
       targetPort: 9000
+      nodePort: 30090
+  type: NodePort
   selector:
     app: backend-app
             
@@ -77,7 +79,7 @@ spec:
         app: backend-app
     spec:
       containers:
-        - image: tabwizard/backend:latest
+        - image: tabwizard/backend
           name: backend-app
           ports:
             - containerPort: 9000
@@ -120,10 +122,10 @@ spec:
         app: frontend-app
     spec:
       containers:
-        - image: tabwizard/frontend:kube
+        - image: tabwizard/front
           name: frontend-app
           ports:
             - containerPort: 80
           env:
             - name: BASE_URL
-              value: http://backend:9000              
+              value: http://51.250.18.25:9000              

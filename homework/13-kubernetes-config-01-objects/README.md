@@ -102,7 +102,16 @@ spec:
 * в окружении фронта прописан адрес сервиса бекенда;
 * в окружении бекенда прописан адрес сервиса базы данных.
 
-**ОТВЕТ:** Создадим **[конфиг](./task_2.yml)** с манифестами deployment`ов, service, statefulset и т.д.:  
+**ОТВЕТ:** Создадим в Яндекс.Облаке балансировщик для доступа к нашим сервисам снаружи:  
+[![Screenshot_20220201_200630.png](./Screenshot_20220201_200630.png)](./Screenshot_20220201_200630.png)
+Поправим файл `.env` у фронтенда, поместим туда адрес нашего балансировщика и пересоберем образ для фронта.  
+
+```bash
+wizard:frontend/ (main✗) $ docker build -t tabwizard/front .
+
+wizard:frontend/ (main✗) $ docker push tabwizard/front
+```
+Создадим **[конфиг](./task_2.yml)** с манифестами deployment`ов, service, statefulset и т.д., сделаем в сервисах фронта и бэка ноде-порт для доступа снаружи через балансировщик:  
 
 ```yaml
 ---
@@ -163,6 +172,8 @@ spec:
     - name: "9000"
       port: 9000
       targetPort: 9000
+      nodePort: 30090
+  type: NodePort
   selector:
     app: backend-app
             
@@ -184,7 +195,7 @@ spec:
         app: backend-app
     spec:
       containers:
-        - image: tabwizard/backend:latest
+        - image: tabwizard/backend
           name: backend-app
           ports:
             - containerPort: 9000
@@ -227,18 +238,23 @@ spec:
         app: frontend-app
     spec:
       containers:
-        - image: tabwizard/frontend:kube
+        - image: tabwizard/front
           name: frontend-app
           ports:
             - containerPort: 80
           env:
             - name: BASE_URL
-              value: http://backend:9000
+              value: http://51.250.18.25:9000              
+
 ```
 
 Применим созданный файл:  
 
-[![Screenshot_20220201_143749.png](./Screenshot_20220201_143749.png)](./Screenshot_20220201_143749.png)  
+[![Screenshot_20220201_200457.png](./Screenshot_20220201_200457.png)](./Screenshot_20220201_200457.png)  
+
+Проверим работу приложения в браузере:  
+
+[![Screenshot_20220201_200553.png](./Screenshot_20220201_200553.png)](./Screenshot_20220201_200553.png)  
 
 ## Задание 3 (*): добавить endpoint на внешний ресурс api
 
