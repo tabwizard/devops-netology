@@ -15,6 +15,7 @@ spec:
       labels:
         app: multitool
     spec:
+      hostname: multitool
       containers:
       - name: multitool
         image: praqma/network-multitool

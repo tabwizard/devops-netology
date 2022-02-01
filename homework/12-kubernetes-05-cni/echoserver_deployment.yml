@@ -12,9 +12,11 @@ spec:
       app: echoserver
   template:
     metadata:
+      name: echoserver
       labels:
         app: echoserver
     spec:
+      hostname: echoserver
       containers:
       - name: echoserver
         image: k8s.gcr.io/echoserver:1.4
