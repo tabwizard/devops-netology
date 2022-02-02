@@ -107,6 +107,76 @@ spec:
 
 [![Screenshot_20220202_135205.png](./Screenshot_20220202_135205.png)](./Screenshot_20220202_135205.png)  
 
+Не будем полагаться на `nfs-server` и создадим `pv` вручную (**[pvc2.yml](./pvc2.yml)**). Проверим работу:
+
+```yaml
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv
+spec:
+  storageClassName: "nfs"
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 100Mi
+  nfs:
+    server: nfs-server.default.svc.cluster.local
+    path: "/data"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc
+spec:
+  storageClassName: "nfs"
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Mi
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: front
+spec:
+  containers:
+    - name: front
+      image: nginx
+      volumeMounts:
+        - mountPath: "/static"
+          name: front-volume
+  volumes:
+    - name: front-volume
+      persistentVolumeClaim:
+        claimName: pvc
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: backend
+spec:
+  containers:
+    - name: backend
+      image: alpine
+      volumeMounts:
+        - mountPath: "/static"
+          name: backend-volume
+      command: [ "/bin/sh", "-c", "--" ]
+      args: [ "while true; do sleep 30; done;" ]
+  volumes:
+    - name: backend-volume
+      persistentVolumeClaim:
+        claimName: pvc
+```
+
+[![Screenshot_20220202_173936.png](./Screenshot_20220202_173936.png)](./Screenshot_20220202_173936.png)
+
 ---
 
 ### Как оформить ДЗ?
