@@ -1,0 +1,48 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc
+spec:
+  storageClassName: "nfs"
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Mi
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: front
+spec:
+  containers:
+    - name: front
+      image: nginx
+      volumeMounts:
+        - mountPath: "/static"
+          name: front-volume
+  volumes:
+    - name: front-volume
+      persistentVolumeClaim:
+        claimName: pvc
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: backend
+spec:
+  containers:
+    - name: backend
+      image: alpine
+      volumeMounts:
+        - mountPath: "/static"
+          name: backend-volume
+      command: [ "/bin/sh", "-c", "--" ]
+      args: [ "while true; do sleep 30; done;" ]
+  volumes:
+    - name: backend-volume
+      persistentVolumeClaim:
+        claimName: pvc
