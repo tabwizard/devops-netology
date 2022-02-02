@@ -1,8 +1,43 @@
+---              
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: stage
+  labels:
+    app: frontend
+spec:
+  ports:
+    - name: "8000"
+      port: 8000
+      targetPort: 80
+      nodePort: 30088
+  type: NodePort
+  selector:
+    app: backfront   
+    
+---              
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: stage
+  labels:
+    app: backend
+spec:
+  ports:
+    - name: "9000"
+      port: 9000
+      targetPort: 9000
+  selector:
+    app: backfront   
+    
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backfront-deployment
+  namespace: stage
   labels:
     app: backfront
 spec:
@@ -25,11 +60,30 @@ spec:
         image: tabwizard/frontend:latest
         ports:
         - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  namespace: stage
+  labels:
+    app: db
+spec:
+  ports:
+    - name: "5432"
+      port: 5432
+      targetPort: 5432
+  selector:
+    app: db-app        
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: db-app
+  namespace: stage
+  labels:
+    app: db-app
 spec:
   selector:
     matchLabels:
@@ -55,3 +109,4 @@ spec:
             value: news
           - name: PGDATA
             value: "/data/pgdata"
+            

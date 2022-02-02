@@ -111,6 +111,7 @@ wizard:frontend/ (main✗) $ docker build -t tabwizard/front .
 
 wizard:frontend/ (main✗) $ docker push tabwizard/front
 ```
+
 Создадим **[конфиг](./task_2.yml)** с манифестами deployment`ов, service, statefulset и т.д., сделаем в сервисах фронта и бэка ноде-порт для доступа снаружи через балансировщик:  
 
 ```yaml
