@@ -31,6 +31,23 @@ spec:
   type: NodePort
   selector:
     app: backfront   
+    
+---              
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: stage
+  labels:
+    app: backend
+spec:
+  ports:
+    - name: "9000"
+      port: 9000
+      targetPort: 9000
+  selector:
+    app: backfront   
+    
 ---
 apiVersion: apps/v1
 kind: Deployment
