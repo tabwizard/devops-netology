@@ -1,0 +1,23 @@
+version: "3.7"
+
+services:
+  frontend:
+    build: ./frontend
+    links:
+      - backend
+    ports:
+      - 8000:80
+
+  backend:
+    depends_on:
+     - db
+    build: ./backend
+    links:
+      - db
+
+  db:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: news

@@ -1,0 +1,140 @@
+# Сервис для базы данных
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  labels:
+    app: db
+spec:
+  ports:
+    - name: "5432"
+      port: 5432
+      targetPort: 5432
+  selector:
+    app: db-app
+
+# База данных    
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db-app
+  labels:
+    app: db-app
+spec:
+  selector:
+    matchLabels:
+      app: db-app
+  serviceName: "db"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: db-app
+    spec:
+      containers:
+      - name: db-app
+        image: postgres:13-alpine
+        ports:
+        - containerPort: 5432
+        env:
+          - name: POSTGRES_PASSWORD
+            value: postgres
+          - name: POSTGRES_USER
+            value: postgres
+          - name: POSTGRES_DB
+            value: news
+          - name: PGDATA
+            value: "/data/pgdata"
+
+# Сервис для фронтенда
+---              
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+spec:
+  ports:
+    - name: "8000"
+      port: 8000
+      targetPort: 80
+      nodePort: 30080
+  type: NodePort
+  selector:
+    app: frontend-app              
+
+    
+# Приложение фронтенда    
+---              
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-app
+  labels:
+    app: frontend-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend-app
+  template:
+    metadata:
+      labels:
+        app: frontend-app
+    spec:
+      containers:
+        - image: tabwizard/frontend:correct
+          name: frontend-app
+          ports:
+            - containerPort: 80
+             
+# Сервис для бэкенда            
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  labels:
+    app: backend
+spec:
+  ports:
+    - name: "9000"
+      port: 9000
+      targetPort: 9000
+  selector:
+    app: backend-app
+
+# Приложение бэкенда    
+---          
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-app
+  labels:
+    app: backend-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-app
+  template:
+    metadata:
+      labels:
+        app: backend-app
+    spec:
+      containers:
+        - image: tabwizard/backend
+          name: backend-app
+          ports:
+            - containerPort: 9000
+          env:
+            - name: DATABASE_URL
+              value: postgres://postgres:postgres@db:5432/news
+          livenessProbe:
+            tcpSocket:
+              port: 9000
+            initialDelaySeconds: 5
+            periodSeconds: 20
