@@ -6,13 +6,16 @@
 
 Необходимо упаковать приложение в чарт для деплоя в разные окружения. Требования:
 
-* каждый компонент приложения деплоится отдельным deployment’ом/statefulset’ом;
-* в переменных чарта измените образ приложения для изменения версии.
+- каждый компонент приложения деплоится отдельным deployment’ом/statefulset’ом;
+- в переменных чарта измените образ приложения для изменения версии.
 
-**ОТВЕТ:** Создадим чарт **[mytestapp](./mytestapp)** и проверим с помощью lint:
+**ОТВЕТ:** Создадим чарт **[mytestapp](./mytestapp)** добавим **[deployment.yaml](./mytestapp/templates/deployment.yaml)** и **[service.yaml](./mytestapp/templates/service.yaml)** с необходимыми переменными и проверим получившийся чарт с помощью lint:
 
 ```bash
-wizard:13-kubernetes-config-04-helm/ (main?) $ helm lint ./mytestapp 
+wizard:13-kubernetes-config-04-helm/ (main✗) $ helm create mytestapp
+Creating mytestapp
+
+wizard:13-kubernetes-config-04-helm/ (main?) $ helm lint ./mytestapp
 ==> Linting ./mytestapp
 [INFO] Chart.yaml: icon is recommended
 
@@ -23,9 +26,9 @@ wizard:13-kubernetes-config-04-helm/ (main?) $ helm lint ./mytestapp
 
 Подготовив чарт, необходимо его проверить. Попробуйте запустить несколько копий приложения:
 
-* одну версию в namespace=app1;
-* вторую версию в том же неймспейсе;
-* третью версию в namespace=app2.
+- одну версию в namespace=app1;
+- вторую версию в том же неймспейсе;
+- третью версию в namespace=app2.
 
 **ОТВЕТ:** Версию менять будем в `Chart.yaml - appVersion` перед каждой установкой. Устанавливать будем с флагом `--create-namespace` чтобы не создавать неймспейсы в ручную. Номер версии будем проверять в имени пода.
 
@@ -97,7 +100,7 @@ mytestapp       app1            2               2022-02-09 14:49:11.108438628 +0
 mytestapp       app2            1               2022-02-09 14:54:23.196941046 +0700 +07 deployed        mytestapp-0.1.0 1.30.0
 ```
 
-## Задание 3 (*): повторить упаковку на jsonnet
+## Задание 3 (\*): повторить упаковку на jsonnet
 
 Для изучения другого инструмента стоит попробовать повторить опыт упаковки из задания 1, только теперь с помощью инструмента jsonnet.
 
