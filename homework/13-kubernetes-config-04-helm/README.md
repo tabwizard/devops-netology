@@ -30,7 +30,7 @@ wizard:13-kubernetes-config-04-helm/ (main?) $ helm lint ./mytestapp
 - вторую версию в том же неймспейсе;
 - третью версию в namespace=app2.
 
-**ОТВЕТ:** Версию менять будем в `Chart.yaml - appVersion` перед каждой установкой. Устанавливать будем с флагом `--create-namespace` чтобы не создавать неймспейсы в ручную. Номер версии будем проверять в имени пода.
+**ОТВЕТ:** Версию менять будем в `Chart.yaml - appVersion` перед каждой установкой. Устанавливать будем с флагом `--create-namespace` чтобы не создавать неймспейсы вручную. Номер версии будем проверять в имени пода.
 
 ```bash
 wizard:13-kubernetes-config-04-helm/ (main?) $ helm install mytestapp ./mytestapp --create-namespace -n app1
