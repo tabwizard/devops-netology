@@ -9,7 +9,15 @@
 * каждый компонент приложения деплоится отдельным deployment’ом/statefulset’ом;
 * в переменных чарта измените образ приложения для изменения версии.
 
-**ОТВЕТ:** Создадим чарт **[mytestapp](./mytestapp)**  
+**ОТВЕТ:** Создадим чарт **[mytestapp](./mytestapp)** и проверим с помощью lint:
+
+```bash
+wizard:13-kubernetes-config-04-helm/ (main?) $ helm lint ./mytestapp 
+==> Linting ./mytestapp
+[INFO] Chart.yaml: icon is recommended
+
+1 chart(s) linted, 0 chart(s) failed
+```
 
 ## Задание 2: запустить 2 версии в разных неймспейсах
 
