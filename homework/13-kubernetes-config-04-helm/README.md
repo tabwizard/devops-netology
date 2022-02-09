@@ -90,6 +90,11 @@ wizard:13-kubernetes-config-04-helm/ (main?) $ kg po -n app2
 NAME                                READY   STATUS             RESTARTS   AGE
 mytestapp-1.30.0-868df45589-2tvjc   1/1     Running   0          22s
 
+
+wizard:13-kubernetes-config-04-helm/ (main?) $ helm list -Aa
+NAME            NAMESPACE       REVISION        UPDATED                                 STATUS          CHART           APP VERSION
+mytestapp       app1            2               2022-02-09 14:49:11.108438628 +0700 +07 deployed        mytestapp-0.1.0 1.20.0
+mytestapp       app2            1               2022-02-09 14:54:23.196941046 +0700 +07 deployed        mytestapp-0.1.0 1.30.0
 ```
 
 ## Задание 3 (*): повторить упаковку на jsonnet
