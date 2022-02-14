@@ -6,9 +6,9 @@
       "name": "backend",
       "image": "nginx:latest",
       "ports": {
-		"containerPortName": "http",
+        "containerPortName": "http",
         "containerPort": 80,
-		"containerPortProtocol": "TCP"
+        "containerPortProtocol": "TCP"
       },
       "service": {
         "port": 80
