@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: netology-pod
+spec:
+  containers:
+  - name: myapp
+    image: ubuntu:latest
+    command: ['/bin/bash', '-c']
+    args: ["sleep 60000"]
+    env:
+      - name: SECRET_USERNAME
+        valueFrom:
+          secretKeyRef:
+            name: mysecret
+            key: username
+      - name: SECRET_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: mysecret
+            key: password
+    volumeMounts:
+      - name: certs
+        mountPath: "/etc/ssh/secret"
+        readOnly: true
+  volumes:
+  - name: certs
+    secret:
+      secretName: domain-cert
