@@ -63,8 +63,10 @@ Generating RSA private key, 4096 bit long modulus (2 primes)
 ................++++
 ....++++
 e is 65537 (0x010001)
+
 wizard:14-kubernetes-net-sec-01-secrets/ (main✗) $ openssl req -x509 -new -key cert.key -days 3650 -out cert.crt \
 -subj '/C=RU/ST=Moscow/L=Moscow/CN=server.local'
+
 wizard:14-kubernetes-net-sec-01-secrets/ (main✗) $ kubectl create secret tls domain-cert --cert=cert.crt --key=cert.key
 secret/domain-cert created
 ```  
@@ -76,6 +78,7 @@ wizard:14-kubernetes-net-sec-01-secrets/ (main✗) $ kubectl get secrets
 NAME                  TYPE                                  DATA   AGE
 default-token-bkzhk   kubernetes.io/service-account-token   3      45h
 domain-cert           kubernetes.io/tls                     2      9m19s
+
 wizard:14-kubernetes-net-sec-01-secrets/ (main✗) $ kubectl get secret
 NAME                  TYPE                                  DATA   AGE
 default-token-bkzhk   kubernetes.io/service-account-token   3      45h
@@ -88,6 +91,7 @@ domain-cert           kubernetes.io/tls                     2      9m39s
 wizard:14-kubernetes-net-sec-01-secrets/ (main✗) $ kubectl get secret domain-cert
 NAME          TYPE                DATA   AGE
 domain-cert   kubernetes.io/tls   2      13m
+
 wizard:14-kubernetes-net-sec-01-secrets/ (main✗) $ kubectl describe secret domain-cert
 Name:         domain-cert
 Namespace:    default
@@ -142,6 +146,7 @@ wizard:14-kubernetes-net-sec-01-secrets/ (main✗) $ kubectl get secret domain-c
 
 ```bash
 wizard:14-kubernetes-net-sec-01-secrets/ (main✗) $ kubectl get secrets -o json > secrets.json
+
 wizard:14-kubernetes-net-sec-01-secrets/ (main✗) $ cat secrets.json
 {
     "apiVersion": "v1",
@@ -192,6 +197,7 @@ wizard:14-kubernetes-net-sec-01-secrets/ (main✗) $ cat secrets.json
 }
 
 wizard:14-kubernetes-net-sec-01-secrets/ (main✗) $ kubectl get secret domain-cert -o yaml > domain-cert.yml
+
 wizard:14-kubernetes-net-sec-01-secrets/ (main✗) $ cat domain-cert.yml
 apiVersion: v1
 data:
@@ -212,6 +218,7 @@ type: kubernetes.io/tls
 ```bash
 wizard:14-kubernetes-net-sec-01-secrets/ (main✗) $ kubectl delete secret domain-cert
 secret "domain-cert" deleted
+
 wizard:14-kubernetes-net-sec-01-secrets/ (main✗) $ kubectl get secrets
 NAME                  TYPE                                  DATA   AGE
 default-token-bkzhk   kubernetes.io/service-account-token   3      46h
@@ -222,6 +229,7 @@ default-token-bkzhk   kubernetes.io/service-account-token   3      46h
 ```bash
 wizard:14-kubernetes-net-sec-01-secrets/ (main✗) $ kubectl apply -f domain-cert.yml
 secret/domain-cert created
+
 wizard:14-kubernetes-net-sec-01-secrets/ (main✗) $ kubectl get secrets
 NAME                  TYPE                                  DATA   AGE
 default-token-bkzhk   kubernetes.io/service-account-token   3      46h
