@@ -268,7 +268,7 @@ nginx-config       1      2s
 Будем использовать уже существующие карты конфигураций:
 
 ```bash
-wizard:14-kubernetes-net-sec-03-configmap/ (main✗) $ kubectl get configmap                                                                   [10:06:02]
+wizard:14-kubernetes-net-sec-03-configmap/ (main✗) $ kubectl get configmap
 NAME               DATA   AGE
 domain             1      25m
 kube-root-ca.crt   1      5d23h
