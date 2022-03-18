@@ -1,52 +1,52 @@
 # Домашняя работа к занятию "14.3 Карты конфигураций"
 
-### Задача 1: Работа с картами конфигураций через утилиту kubectl в установленном minikube
+## Задача 1: Работа с картами конфигураций через утилиту kubectl в установленном minikube
 
 Выполните приведённые команды в консоли. Получите вывод команд. Сохраните
 задачу 1 как справочный материал.
 
-#### Как создать карту конфигураций?
+**Как создать карту конфигураций?**
 
 ```bash
 kubectl create configmap nginx-config --from-file=nginx.conf
 kubectl create configmap domain --from-literal=name=netology.ru
 ```
 
-#### Как просмотреть список карт конфигураций?
+**Как просмотреть список карт конфигураций?**
 
 ```bash
 kubectl get configmaps
 kubectl get configmap
 ```
 
-#### Как просмотреть карту конфигурации?
+**Как просмотреть карту конфигурации?**
 
 ```bash
 kubectl get configmap nginx-config
 kubectl describe configmap domain
 ```
 
-#### Как получить информацию в формате YAML и/или JSON?
+**Как получить информацию в формате YAML и/или JSON?**
 
 ```bash
 kubectl get configmap nginx-config -o yaml
 kubectl get configmap domain -o json
 ```
 
-#### Как выгрузить карту конфигурации и сохранить его в файл?
+**Как выгрузить карту конфигурации и сохранить его в файл?**
 
 ```bash
 kubectl get configmaps -o json > configmaps.json
 kubectl get configmap nginx-config -o yaml > nginx-config.yml
 ```
 
-#### Как удалить карту конфигурации?
+**Как удалить карту конфигурации?**
 
 ```bash
 kubectl delete configmap nginx-config
 ```
 
-#### Как загрузить карту конфигурации из файла?
+**Как загрузить карту конфигурации из файла?**
 
 ```bash
 kubectl apply -f nginx-config.yml
@@ -336,7 +336,9 @@ server {
         proxy_pass http://10.10.10.10:8080/;
     }
 }
-```
+```  
+
+![Screenshot_20220318_102253.png](./Screenshot_20220318_102253.png)  
 
 ---
 
